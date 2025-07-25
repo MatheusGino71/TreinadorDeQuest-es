@@ -6,7 +6,8 @@ import { z } from "zod";
 export const questions = pgTable("questions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   text: text("text").notNull(),
-  correctAnswer: boolean("correct_answer").notNull(),
+  options: text("options").array().notNull(), // Array of 4 options
+  correctAnswerIndex: integer("correct_answer_index").notNull(), // 0-3
   difficulty: integer("difficulty").notNull().default(1), // 1-5 stars
   category: text("category").notNull().default("Processo Civil"),
   explanation: text("explanation"),
@@ -41,12 +42,13 @@ export type GameSession = typeof gameSession.$inferSelect;
 // Additional types for game state
 export const answerSchema = z.object({
   questionId: z.string(),
-  answer: z.boolean(),
+  answerIndex: z.number().min(-1).max(3), // -1 for timeout, 0-3 for multiple choice
   timeRemaining: z.number().optional(),
 });
 
 export const powerUpSchema = z.object({
   type: z.enum(["fiftyFifty", "extraTime", "skip"]),
+  questionId: z.string().optional(),
 });
 
 export type Answer = z.infer<typeof answerSchema>;

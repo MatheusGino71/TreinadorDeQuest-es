@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({
         session,
-        questions: questions.map(q => ({ id: q.id, text: q.text, difficulty: q.difficulty, category: q.category })),
+        questions: questions.map(q => ({ id: q.id, text: q.text, options: q.options, difficulty: q.difficulty, category: q.category })),
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to start game session" });
@@ -35,7 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit answer
   app.post("/api/game/answer", async (req, res) => {
     try {
-      const { questionId, answer, timeRemaining } = answerSchema.parse(req.body);
+      const { questionId, answerIndex, timeRemaining } = answerSchema.parse(req.body);
       const { sessionId } = req.body;
 
       if (!sessionId) {
@@ -49,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Question or session not found" });
       }
 
-      const isCorrect = answer === question.correctAnswer;
+      const isCorrect = answerIndex >= 0 && answerIndex === question.correctAnswerIndex;
       let scoreIncrease = 0;
 
       if (isCorrect) {
@@ -96,8 +96,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       switch (type) {
         case "fiftyFifty":
-          // This power-up is handled on frontend
-          result.message = "50/50 activated";
+          if (questionId) {
+            const question = await storage.getQuestionById(questionId);
+            if (question) {
+              // Return 2 wrong options to eliminate (keep correct + 1 wrong)
+              const wrongIndices = [0, 1, 2, 3].filter(i => i !== question.correctAnswerIndex);
+              const eliminateIndices = wrongIndices.slice(0, 2); // Eliminate 2 wrong options
+              result.eliminateIndices = eliminateIndices;
+            }
+          }
+          result.message = "50/50 ativado - 2 opções eliminadas";
           break;
         case "extraTime":
           result.extraTime = 10;

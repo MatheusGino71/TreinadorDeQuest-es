@@ -25,141 +25,161 @@ export class MemStorage implements IStorage {
   private initializeQuestions() {
     const sampleQuestions: Omit<Question, 'id'>[] = [
       {
-        text: "O prazo para apresentação de contestação em processo de conhecimento é de 15 dias, contados da citação válida.",
-        correctAnswer: true,
+        text: "Qual é o prazo para apresentação de contestação em processo de conhecimento?",
+        options: ["10 dias", "15 dias", "20 dias", "30 dias"],
+        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
-        explanation: "Conforme o CPC, o prazo para contestação é realmente de 15 dias úteis contados da citação."
+        explanation: "Conforme o CPC, o prazo para contestação é de 15 dias úteis contados da citação."
       },
       {
-        text: "A revelia implica necessariamente na procedência total do pedido do autor.",
-        correctAnswer: false,
+        text: "O que acontece quando há revelia no processo?",
+        options: ["Procedência automática do pedido", "Presunção de veracidade dos fatos alegados", "Extinção do processo", "Condenação em honorários"],
+        correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "A revelia não implica automaticamente na procedência do pedido, apenas presume-se verdadeiros os fatos alegados pelo autor."
       },
       {
-        text: "O recurso de apelação deve ser interposto no prazo de 15 dias contados da intimação da sentença.",
-        correctAnswer: true,
+        text: "Qual o prazo para interposição do recurso de apelação?",
+        options: ["5 dias", "10 dias", "15 dias", "30 dias"],
+        correctAnswerIndex: 2,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "O prazo para apelação é de 15 dias úteis contados da intimação da decisão."
       },
       {
-        text: "É possível a citação por edital como primeira opção para localizar o réu.",
-        correctAnswer: false,
+        text: "Quando é possível a citação por edital?",
+        options: ["Como primeira opção", "Após tentativas de localização", "Apenas em casos urgentes", "Somente com autorização judicial"],
+        correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "A citação por edital é medida excepcional, só sendo admitida após esgotadas as tentativas de localização do réu."
       },
       {
-        text: "A antecipação de tutela pode ser concedida liminarmente pelo juiz.",
-        correctAnswer: true,
+        text: "Sobre a antecipação de tutela, é correto afirmar:",
+        options: ["Só pode ser concedida após contraditório", "Pode ser concedida liminarmente", "Depende sempre de caução", "É vedada em processos sumários"],
+        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "A tutela de urgência pode ser concedida liminarmente quando presentes os requisitos legais."
       },
       {
-        text: "O prazo para oferecimento de tríplica é de 15 dias.",
-        correctAnswer: true,
+        text: "Qual o prazo para oferecimento de tríplica?",
+        options: ["5 dias", "10 dias", "15 dias", "20 dias"],
+        correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
-        explanation: "O prazo para tríplica segue o mesmo prazo da contestação e da tríplica: 15 dias úteis."
+        explanation: "O prazo para tríplica segue o mesmo prazo da contestação: 15 dias úteis."
       },
       {
-        text: "A execução de título extrajudicial dispensa a fase de conhecimento.",
-        correctAnswer: true,
+        text: "A execução de título extrajudicial:",
+        options: ["Necessita de processo de conhecimento", "Dispensa a fase de conhecimento", "Requer sentença prévia", "Depende de homologação"],
+        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "Títulos executivos extrajudiciais permitem execução direta, sem necessidade de processo de conhecimento prévio."
       },
       {
-        text: "O juiz pode indeferir a petição inicial mesmo após o contraditório.",
-        correctAnswer: false,
+        text: "Quando pode ocorrer o indeferimento da petição inicial?",
+        options: ["Após o contraditório", "Antes da citação do réu", "Apenas na sentença", "Somente em recurso"],
+        correctAnswerIndex: 1,
         difficulty: 4,
         category: "Processo Civil",
         explanation: "O indeferimento da petição inicial ocorre antes da citação do réu, não após o contraditório."
       },
       {
-        text: "A competência territorial pode ser alterada pela vontade das partes.",
-        correctAnswer: true,
+        text: "Sobre a competência territorial:",
+        options: ["É sempre absoluta", "Pode ser alterada pelas partes", "Não pode ser modificada", "Depende do valor da causa"],
+        correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "A competência relativa (territorial) pode ser modificada por acordo entre as partes ou por não alegação de incompetência."
       },
       {
-        text: "A decisão interlocutória faz coisa julgada material.",
-        correctAnswer: false,
+        text: "A decisão interlocutória:",
+        options: ["Faz coisa julgada material", "Faz coisa julgada formal", "Faz apenas preclusão", "Não produz efeitos"],
+        correctAnswerIndex: 2,
         difficulty: 4,
         category: "Processo Civil",
         explanation: "Apenas as sentenças de mérito fazem coisa julgada material. Decisões interlocutórias fazem preclusão."
       },
       {
-        text: "O litisconsórcio necessário pode ser ativo ou passivo.",
-        correctAnswer: true,
+        text: "O litisconsórcio necessário:",
+        options: ["Só pode ser ativo", "Só pode ser passivo", "Pode ser ativo ou passivo", "Não existe no CPC"],
+        correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "O litisconsórcio necessário pode ocorrer tanto no polo ativo quanto no passivo da relação processual."
       },
       {
-        text: "A perícia é sempre obrigatória em casos que envolvem questões técnicas.",
-        correctAnswer: false,
+        text: "A perícia em casos técnicos é:",
+        options: ["Sempre obrigatória", "Sempre facultativa", "Facultativa conforme necessidade", "Vedada pelo CPC"],
+        correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "A perícia é facultativa e depende da necessidade de esclarecimento de fatos que dependam de conhecimento técnico."
       },
       {
-        text: "O agravo de instrumento deve ser interposto no prazo de 15 dias.",
-        correctAnswer: true,
+        text: "Qual o prazo para agravo de instrumento?",
+        options: ["5 dias", "10 dias", "15 dias", "30 dias"],
+        correctAnswerIndex: 2,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "O prazo para agravo de instrumento é de 15 dias úteis contados da intimação da decisão."
       },
       {
-        text: "A mediação é obrigatória em todos os processos cíveis.",
-        correctAnswer: false,
+        text: "A audiência de mediação/conciliação é:",
+        options: ["Sempre facultativa", "Obrigatória com participação obrigatória", "Obrigatória mas participação facultativa", "Apenas para casos complexos"],
+        correctAnswerIndex: 2,
         difficulty: 2,
         category: "Processo Civil",
-        explanation: "A audiência de mediação/conciliação é obrigatória, mas a mediação em si não, podendo as partes optar por não participar."
+        explanation: "A audiência de mediação/conciliação é obrigatória, mas a participação efetiva das partes é facultativa."
       },
       {
-        text: "O prazo para embargos de declaração é de 5 dias.",
-        correctAnswer: true,
+        text: "Qual o prazo para embargos de declaração?",
+        options: ["3 dias", "5 dias", "10 dias", "15 dias"],
+        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "Os embargos de declaração devem ser opostos no prazo de 5 dias úteis."
       },
       {
-        text: "A petição inicial pode ser emendada quantas vezes for necessário.",
-        correctAnswer: false,
+        text: "A emenda da petição inicial:",
+        options: ["Pode ser feita quantas vezes necessário", "É permitida apenas uma vez", "Depende de justificativa especial após primeira oportunidade", "É vedada pelo CPC"],
+        correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "O juiz deve dar oportunidade para emendar a inicial uma vez. Novas emendas dependem de justificativa especial."
       },
       {
-        text: "A conexão de processos é sempre obrigatória quando verificada.",
-        correctAnswer: true,
+        text: "Quando verificada a conexão entre processos:",
+        options: ["A reunião é facultativa", "A reunião é obrigatória", "Depende do juiz", "Só ocorre se as partes concordarem"],
+        correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "Verificada a conexão, a reunião dos processos é obrigatória para evitar decisões conflitantes."
       },
       {
-        text: "O réu pode reconvir em qualquer fase do processo.",
-        correctAnswer: false,
+        text: "A reconvenção deve ser apresentada:",
+        options: ["A qualquer tempo", "Junto com a contestação", "Após a tríplica", "Apenas na sentença"],
+        correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
         explanation: "A reconvenção deve ser apresentada junto com a contestação, no prazo de resposta."
       },
       {
-        text: "A tutela inibitória visa impedir a prática de ato ilícito.",
-        correctAnswer: true,
+        text: "A tutela inibitória tem por objetivo:",
+        options: ["Reparar dano já ocorrido", "Impedir prática de ato ilícito", "Executar decisão judicial", "Anular ato processual"],
+        correctAnswerIndex: 1,
         difficulty: 4,
         category: "Processo Civil",
         explanation: "A tutela inibitória tem caráter preventivo, visando impedir a ocorrência ou repetição de ilícito."
       },
       {
-        text: "O processo eletrônico dispensa a juntada de procuração.",
-        correctAnswer: false,
+        text: "No processo eletrônico, a procuração:",
+        options: ["É dispensada", "Deve ser juntada em formato digital", "Só é aceita em papel", "Não tem validade"],
+        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
         explanation: "Mesmo no processo eletrônico, a procuração deve ser juntada, podendo ser em formato digital."

@@ -3,6 +3,7 @@ import { HelpCircle, Star } from "lucide-react";
 interface Question {
   id: string;
   text: string;
+  options: string[];
   difficulty: number;
   category: string;
 }
@@ -29,7 +30,7 @@ export default function QuestionCard({ question, questionNumber }: QuestionCardP
 
           <div className="flex items-center justify-center space-x-2 text-game-text-secondary">
             <HelpCircle className="w-4 h-4" />
-            <span className="text-sm">Esta afirmação é verdadeira ou falsa?</span>
+            <span className="text-sm">Escolha a alternativa correta:</span>
           </div>
         </div>
 

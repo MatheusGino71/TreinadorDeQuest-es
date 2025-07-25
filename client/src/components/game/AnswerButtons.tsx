@@ -1,40 +1,55 @@
-import { Check, X } from "lucide-react";
-
 interface AnswerButtonsProps {
-  onAnswer: (answer: boolean) => void;
+  options: string[];
+  eliminatedOptions?: number[];
+  onAnswer: (answerIndex: number) => void;
   disabled: boolean;
 }
 
-export default function AnswerButtons({ onAnswer, disabled }: AnswerButtonsProps) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <button
-        onClick={() => onAnswer(true)}
-        disabled={disabled}
-        className="answer-btn group bg-game-green hover:bg-green-600 text-white rounded-2xl p-8 text-xl font-bold shadow-lg game-button disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <div className="flex items-center justify-center space-x-4">
-          <div className="bg-white bg-opacity-20 rounded-full p-3 group-hover:bg-opacity-30 transition-all">
-            <Check className="w-6 h-6" />
-          </div>
-          <span className="text-2xl">VERDADEIRO</span>
-        </div>
-        <div className="mt-2 text-sm opacity-75">Pressione V ou clique aqui</div>
-      </button>
+export default function AnswerButtons({ options, eliminatedOptions = [], onAnswer, disabled }: AnswerButtonsProps) {
+  const buttonColors = [
+    "bg-game-blue hover:bg-blue-600",
+    "bg-game-green hover:bg-green-600", 
+    "bg-game-yellow hover:bg-yellow-600",
+    "bg-game-red hover:bg-red-600"
+  ];
 
-      <button
-        onClick={() => onAnswer(false)}
-        disabled={disabled}
-        className="answer-btn group bg-game-red hover:bg-red-600 text-white rounded-2xl p-8 text-xl font-bold shadow-lg game-button disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <div className="flex items-center justify-center space-x-4">
-          <div className="bg-white bg-opacity-20 rounded-full p-3 group-hover:bg-opacity-30 transition-all">
-            <X className="w-6 h-6" />
-          </div>
-          <span className="text-2xl">FALSO</span>
-        </div>
-        <div className="mt-2 text-sm opacity-75">Pressione F ou clique aqui</div>
-      </button>
+  if (!options || options.length === 0) {
+    return <div className="mb-8">Carregando opções...</div>;
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      {options.map((option, index) => {
+        const isEliminated = eliminatedOptions.includes(index);
+        return (
+          <button
+            key={index}
+            onClick={() => !isEliminated && onAnswer(index)}
+            disabled={disabled || isEliminated}
+            className={`answer-btn group ${
+              isEliminated 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50' 
+                : buttonColors[index]
+            } text-white rounded-xl p-6 text-lg font-semibold shadow-lg game-button disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            <div className="flex items-center justify-start space-x-4">
+              <div className={`rounded-full w-8 h-8 flex items-center justify-center transition-all text-sm font-bold ${
+                isEliminated 
+                  ? 'bg-gray-500 bg-opacity-50' 
+                  : 'bg-white bg-opacity-20 group-hover:bg-opacity-30'
+              }`}>
+                {isEliminated ? '✗' : index + 1}
+              </div>
+              <span className={`text-left flex-1 ${isEliminated ? 'line-through' : ''}`}>
+                {option}
+              </span>
+            </div>
+            <div className="mt-2 text-xs opacity-75">
+              {isEliminated ? 'Eliminada pelo 50/50' : `Pressione ${index + 1} ou clique aqui`}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 interface Question {
   id: string;
   text: string;
+  options: string[];
   difficulty: number;
   category: string;
 }
@@ -41,6 +42,7 @@ interface GameState {
   isGameOver: boolean;
   showGameOver: boolean;
   usedPowerUps: { [key: string]: boolean };
+  eliminatedOptions: number[];
 }
 
 export default function Game() {
@@ -54,6 +56,7 @@ export default function Game() {
     isGameOver: false,
     showGameOver: false,
     usedPowerUps: {},
+    eliminatedOptions: [],
   });
 
   // Start game mutation
@@ -72,6 +75,7 @@ export default function Game() {
         isGameOver: false,
         showGameOver: false,
         usedPowerUps: {},
+        eliminatedOptions: [],
       }));
       toast({
         title: "Jogo iniciado!",
@@ -89,11 +93,11 @@ export default function Game() {
 
   // Submit answer mutation
   const submitAnswerMutation = useMutation({
-    mutationFn: async ({ questionId, answer, timeRemaining }: { questionId: string; answer: boolean; timeRemaining: number }) => {
+    mutationFn: async ({ questionId, answerIndex, timeRemaining }: { questionId: string; answerIndex: number; timeRemaining: number }) => {
       const response = await apiRequest("POST", "/api/game/answer", {
         sessionId: gameState.session?.id,
         questionId,
-        answer,
+        answerIndex,
         timeRemaining,
       });
       return response.json();
@@ -104,6 +108,7 @@ export default function Game() {
         session: data.session,
         currentQuestionIndex: prev.currentQuestionIndex + 1,
         timeRemaining: 20,
+        eliminatedOptions: [], // Reset eliminated options for next question
       }));
 
       // Show feedback
@@ -141,6 +146,7 @@ export default function Game() {
         ...prev,
         usedPowerUps: { ...prev.usedPowerUps, [variables.type]: true },
         ...(variables.type === "extraTime" ? { timeRemaining: prev.timeRemaining + 10 } : {}),
+        ...(variables.type === "fiftyFifty" && data.eliminateIndices ? { eliminatedOptions: data.eliminateIndices } : {}),
       }));
 
       toast({
@@ -157,12 +163,12 @@ export default function Game() {
     const timer = setInterval(() => {
       setGameState(prev => {
         if (prev.timeRemaining <= 1) {
-          // Time's up - submit false answer
+          // Time's up - submit random wrong answer
           const currentQuestion = prev.questions[prev.currentQuestionIndex];
           if (currentQuestion) {
             submitAnswerMutation.mutate({
               questionId: currentQuestion.id,
-              answer: false,
+              answerIndex: -1, // Invalid answer index to mark as incorrect
               timeRemaining: 0,
             });
           }
@@ -186,11 +192,17 @@ export default function Game() {
       if (!currentQuestion) return;
 
       switch (key) {
-        case "v":
-          handleAnswer(true);
+        case "1":
+          handleAnswer(0);
           break;
-        case "f":
-          handleAnswer(false);
+        case "2":
+          handleAnswer(1);
+          break;
+        case "3":
+          handleAnswer(2);
+          break;
+        case "4":
+          handleAnswer(3);
           break;
         case "escape":
           togglePause();
@@ -202,7 +214,7 @@ export default function Game() {
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, [gameState]);
 
-  const handleAnswer = useCallback((answer: boolean) => {
+  const handleAnswer = useCallback((answerIndex: number) => {
     if (gameState.isPaused || gameState.isGameOver || submitAnswerMutation.isPending) return;
 
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
@@ -210,7 +222,7 @@ export default function Game() {
 
     submitAnswerMutation.mutate({
       questionId: currentQuestion.id,
-      answer,
+      answerIndex,
       timeRemaining: gameState.timeRemaining,
     });
   }, [gameState, submitAnswerMutation]);
@@ -238,6 +250,7 @@ export default function Game() {
       ...prev,
       isPaused: false,
       showGameOver: false,
+      eliminatedOptions: [],
     }));
     startGameMutation.mutate();
   }, [startGameMutation]);
@@ -312,6 +325,8 @@ export default function Game() {
               />
 
               <AnswerButtons
+                options={currentQuestion.options}
+                eliminatedOptions={gameState.eliminatedOptions}
                 onAnswer={handleAnswer}
                 disabled={submitAnswerMutation.isPending || gameState.isPaused}
               />
