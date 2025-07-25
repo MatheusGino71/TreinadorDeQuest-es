@@ -1,0 +1,125 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { answerSchema, powerUpSchema } from "@shared/schema";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Start new game session
+  app.post("/api/game/start", async (req, res) => {
+    try {
+      const session = await storage.createGameSession();
+      const questions = await storage.getRandomQuestions(20);
+      
+      res.json({
+        session,
+        questions: questions.map(q => ({ id: q.id, text: q.text, difficulty: q.difficulty, category: q.category })),
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to start game session" });
+    }
+  });
+
+  // Get game session
+  app.get("/api/game/session/:id", async (req, res) => {
+    try {
+      const session = await storage.getGameSession(req.params.id);
+      if (!session) {
+        return res.status(404).json({ message: "Game session not found" });
+      }
+      res.json(session);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get game session" });
+    }
+  });
+
+  // Submit answer
+  app.post("/api/game/answer", async (req, res) => {
+    try {
+      const { questionId, answer, timeRemaining } = answerSchema.parse(req.body);
+      const { sessionId } = req.body;
+
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
+      }
+
+      const question = await storage.getQuestionById(questionId);
+      const session = await storage.getGameSession(sessionId);
+
+      if (!question || !session) {
+        return res.status(404).json({ message: "Question or session not found" });
+      }
+
+      const isCorrect = answer === question.correctAnswer;
+      let scoreIncrease = 0;
+
+      if (isCorrect) {
+        // Base score + difficulty bonus + time bonus
+        scoreIncrease = 100 + (question.difficulty * 20) + (timeRemaining || 0);
+        // Streak bonus
+        if (session.currentStreak >= 3) {
+          scoreIncrease += session.currentStreak * 10;
+        }
+      }
+
+      const updatedSession = await storage.updateGameSession(sessionId, {
+        score: session.score + scoreIncrease,
+        correctAnswers: session.correctAnswers + (isCorrect ? 1 : 0),
+        incorrectAnswers: session.incorrectAnswers + (isCorrect ? 0 : 1),
+        currentStreak: isCorrect ? session.currentStreak + 1 : 0,
+        lives: isCorrect ? session.lives : Math.max(0, session.lives - 1),
+        questionNumber: session.questionNumber + 1,
+        isGameOver: session.lives <= 1 && !isCorrect || session.questionNumber >= session.totalQuestions,
+      });
+
+      res.json({
+        correct: isCorrect,
+        scoreIncrease,
+        explanation: question.explanation,
+        session: updatedSession,
+      });
+    } catch (error) {
+      res.status(400).json({ message: "Invalid request data" });
+    }
+  });
+
+  // Use power-up
+  app.post("/api/game/powerup", async (req, res) => {
+    try {
+      const { type } = powerUpSchema.parse(req.body);
+      const { sessionId, questionId } = req.body;
+
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
+      }
+
+      let result: any = { success: true };
+
+      switch (type) {
+        case "fiftyFifty":
+          // This power-up is handled on frontend
+          result.message = "50/50 activated";
+          break;
+        case "extraTime":
+          result.extraTime = 10;
+          result.message = "+10 seconds added";
+          break;
+        case "skip":
+          const session = await storage.getGameSession(sessionId);
+          if (session) {
+            await storage.updateGameSession(sessionId, {
+              questionNumber: session.questionNumber + 1,
+            });
+          }
+          result.message = "Question skipped";
+          break;
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid power-up request" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

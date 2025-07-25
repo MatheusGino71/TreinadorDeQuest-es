@@ -1,0 +1,94 @@
+# Game OAB - Legal Study Game
+
+## Overview
+
+This is a React-based quiz game application focused on Brazilian legal studies, specifically targeting OAB (Ordem dos Advogados do Brasil) exam preparation. The application features a true/false question format with gamification elements like lives, power-ups, and scoring systems.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Routing**: Wouter for client-side routing
+- **Styling**: Tailwind CSS with shadcn/ui component library
+- **State Management**: React hooks with TanStack Query for server state
+- **Build Tool**: Vite for development and production builds
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js
+- **Language**: TypeScript with ES modules
+- **API Pattern**: RESTful API endpoints under `/api` prefix
+- **Session Management**: In-memory storage with planned database integration
+
+### Data Storage Solutions
+- **Database**: PostgreSQL with Drizzle ORM
+- **Connection**: Neon Database serverless driver
+- **Current Storage**: In-memory storage for development (MemStorage class)
+- **Migration**: Drizzle Kit for schema management
+
+## Key Components
+
+### Game Engine
+- **Game Session Management**: Tracks player progress, score, lives, and streaks
+- **Question System**: Handles true/false questions with difficulty ratings and categories
+- **Power-ups**: Three types - 50/50, extra time, and skip question
+- **Timer System**: 20-second countdown per question with visual indicator
+
+### UI Components
+- **Game Interface**: Header with stats, question card, answer buttons, timer
+- **Modals**: Game over and pause functionality
+- **Power-ups Interface**: Visual power-up buttons with usage tracking
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+### API Endpoints
+- `POST /api/game/start` - Initialize new game session
+- `GET /api/game/session/:id` - Retrieve game session data
+- `POST /api/game/answer` - Submit answer and update game state
+
+## Data Flow
+
+1. **Game Initialization**: Client requests new game session, server creates session and returns 20 random questions
+2. **Question Display**: Client displays questions one by one with timer and UI controls
+3. **Answer Submission**: Client sends answer with timing data, server validates and updates session
+4. **State Updates**: Server calculates score, updates lives, and manages game progression
+5. **Game Completion**: Session ends when lives reach zero or all questions answered
+
+## External Dependencies
+
+### Frontend Dependencies
+- **UI Framework**: Radix UI primitives for accessible components
+- **Icons**: Lucide React for consistent iconography
+- **Data Fetching**: TanStack Query for caching and synchronization
+- **Form Handling**: React Hook Form with Zod validation
+- **Date Utilities**: date-fns for time formatting
+
+### Backend Dependencies
+- **Database**: Neon Database with Drizzle ORM
+- **Validation**: Zod schemas for type-safe API contracts
+- **Development**: tsx for TypeScript execution
+- **Build**: esbuild for production bundling
+
+## Deployment Strategy
+
+### Development
+- **Client**: Vite dev server with HMR on client directory
+- **Server**: tsx with nodemon-like reloading
+- **Database**: Drizzle push for schema synchronization
+
+### Production
+- **Build Process**: Vite builds client to `dist/public`, esbuild bundles server to `dist/`
+- **Static Serving**: Express serves built client files
+- **Environment**: NODE_ENV-based configuration
+- **Database**: PostgreSQL with connection pooling via Neon
+
+### Key Architectural Decisions
+
+1. **Monorepo Structure**: Shared schema between client and server in `shared/` directory
+2. **Type Safety**: End-to-end TypeScript with Zod validation
+3. **Database Abstraction**: Storage interface allows switching between in-memory and persistent storage
+4. **Component Architecture**: Shadcn/ui for consistent, accessible components
+5. **State Management**: Server state via TanStack Query, local state via React hooks
+6. **Gaming Elements**: Lives system, power-ups, and progressive difficulty for engagement
