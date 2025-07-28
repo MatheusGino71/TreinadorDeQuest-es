@@ -25,7 +25,7 @@ interface PreparationProps {
 
 export default function Preparation({ user, onStartGame, onLogout }: PreparationProps) {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB" | "CONCURSOS">("OAB");
+  const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB_1_FASE" | "CONCURSOS">("OAB_1_FASE");
 
   const gameRules = [
     {
@@ -118,20 +118,21 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
               <h3 className="text-xl font-semibold text-white mb-4 text-center">Escolha seu Desafio</h3>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
-                  onClick={() => setSelectedChallengeType("OAB")}
+                  onClick={() => setSelectedChallengeType("OAB_1_FASE")}
                   className={`p-6 rounded-xl border-2 transition-all duration-300 min-w-[250px] ${
-                    selectedChallengeType === "OAB"
+                    selectedChallengeType === "OAB_1_FASE"
                       ? "border-blue-400 bg-blue-500/20 shadow-lg shadow-blue-500/20"
                       : "border-white/20 bg-white/5 hover:border-blue-300 hover:bg-blue-500/10"
                   }`}
                 >
                   <div className="text-center">
-                    <h4 className="text-2xl font-bold text-white mb-2">OAB</h4>
-                    <p className="text-blue-200 text-sm mb-3">Exame da Ordem dos Advogados</p>
+                    <h4 className="text-2xl font-bold text-white mb-2">OAB 1ª FASE</h4>
+                    <p className="text-blue-200 text-sm mb-3">Primeira Fase - Todas as disciplinas</p>
                     <div className="text-xs text-blue-300">
-                      <div>• Processo Civil</div>
-                      <div>• Direito Processual</div>
-                      <div>• Prática Advocatícia</div>
+                      <div>• Direito Constitucional</div>
+                      <div>• Direito Civil e Penal</div>
+                      <div>• Processo Civil e Trabalho</div>
+                      <div>• Direito Empresarial</div>
                     </div>
                   </div>
                 </button>
@@ -148,9 +149,9 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                     <h4 className="text-2xl font-bold text-white mb-2">CONCURSOS</h4>
                     <p className="text-blue-200 text-sm mb-3">Concursos Públicos</p>
                     <div className="text-xs text-blue-300">
-                      <div>• Direito Administrativo</div>
-                      <div>• Direito Constitucional</div>
-                      <div>• Tribunais e Procuradorias</div>
+                      <div>• MPSP, Defensoria Pública</div>
+                      <div>• Tribunais, Procuradorias</div>
+                      <div>• ENAM e CNU</div>
                     </div>
                   </div>
                 </button>
@@ -181,7 +182,7 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
               className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-4 px-8 text-lg min-w-[200px]"
             >
               <Play className="w-6 h-6 mr-2" />
-              Iniciar {selectedChallengeType}
+              Iniciar {selectedChallengeType === "OAB_1_FASE" ? "OAB 1ª Fase" : "Concursos"}
             </Button>
             
             <Button

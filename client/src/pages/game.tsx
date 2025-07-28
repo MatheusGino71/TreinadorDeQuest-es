@@ -18,6 +18,7 @@ interface Question {
   options: string[];
   difficulty: number;
   category: string;
+  challengeType: string;
 }
 
 interface GameSession {
@@ -67,7 +68,7 @@ export default function Game({ user, onLogout }: GameProps) {
   // Start game mutation
   const startGameMutation = useMutation({
     mutationFn: async () => {
-      const challengeType = localStorage.getItem('game-challenge-type') || 'OAB';
+      const challengeType = localStorage.getItem('game-challenge-type') || 'OAB_1_FASE';
       const response = await apiRequest("POST", "/api/game/start", {
         userId: user?.id,
         challengeType
@@ -86,9 +87,10 @@ export default function Game({ user, onLogout }: GameProps) {
         usedPowerUps: {},
         eliminatedOptions: [],
       }));
+      const challengeType = localStorage.getItem('game-challenge-type');
       toast({
         title: "Jogo iniciado!",
-        description: "Boa sorte com as questões de Processo Civil!",
+        description: `Boa sorte com as questões ${challengeType === 'OAB_1_FASE' ? 'da OAB 1ª Fase' : 'de Concursos'}!`,
       });
     },
     onError: () => {
