@@ -69,6 +69,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Questions count endpoint
+  app.get("/api/questions/count", async (req, res) => {
+    try {
+      console.log("Getting questions count...");
+      const oabQuestions = await storage.getQuestions("OAB_1_FASE");
+      const concursosQuestions = await storage.getQuestions("CONCURSOS_MPSP");
+      
+      const result = {
+        OAB_1_FASE: oabQuestions.length,
+        CONCURSOS_MPSP: concursosQuestions.length,
+        total: oabQuestions.length + concursosQuestions.length
+      };
+      
+      console.log("Questions count:", result);
+      res.json(result);
+    } catch (error) {
+      console.error("Error counting questions:", error);
+      res.status(500).json({ error: "Failed to count questions" });
+    }
+  });
+
   // Start new game session
   app.post("/api/game/start", async (req, res) => {
     try {

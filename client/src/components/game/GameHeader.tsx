@@ -43,14 +43,20 @@ export default function GameHeader({ session, user, onPause, onLogout }: GameHea
             </div>
             
             <div className="text-center">
-              <div className="text-sm text-game-text-secondary">Pontuação</div>
+              <div className="text-sm text-game-text-secondary">Questão</div>
+              <div className="text-xl font-bold text-game-blue">
+                {session.questionNumber} / {session.totalQuestions}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm text-game-text-secondary">Score</div>
               <div className="text-xl font-bold text-game-yellow">
                 {session.score.toLocaleString()}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-sm text-game-text-secondary">Nível</div>
-              <div className="text-xl font-bold text-game-blue">{session.level}</div>
+              <div className="text-sm text-game-text-secondary">Acertos</div>
+              <div className="text-xl font-bold text-game-green">{session.correctAnswers}</div>
             </div>
             
             <Button

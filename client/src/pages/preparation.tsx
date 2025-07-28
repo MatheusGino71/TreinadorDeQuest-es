@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -27,26 +28,36 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
   const [showInstructions, setShowInstructions] = useState(false);
   const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB_1_FASE" | "CONCURSOS_MPSP">("OAB_1_FASE");
 
+  // Fetch questions count dynamically
+  const { data: questionsCount } = useQuery({
+    queryKey: ["/api/questions/count"],
+    staleTime: 5 * 60 * 1000, // Cache por 5 minutos
+  });
+
   const gameRules = [
     {
       icon: <Target className="w-6 h-6 text-blue-500" />,
-      title: "20 Questões",
-      description: "Responda questões sobre todas as disciplinas da 1ª Fase"
-    },
-    {
-      icon: <Heart className="w-6 h-6 text-red-500" />,
-      title: "3 Vidas",
-      description: "Você perde uma vida a cada resposta errada"
+      title: selectedChallengeType === "OAB_1_FASE" 
+        ? `${questionsCount?.OAB_1_FASE || 450} Questões` 
+        : `${questionsCount?.CONCURSOS_MPSP || 81} Questões`,
+      description: selectedChallengeType === "OAB_1_FASE" 
+        ? "Responda questões sobre todas as disciplinas da 1ª Fase" 
+        : "Questões específicas para concursos MPSP"
     },
     {
       icon: <Timer className="w-6 h-6 text-yellow-500" />,
-      title: "20 Segundos",
+      title: "60 Segundos",
       description: "Tempo limite para responder cada questão"
     },
     {
       icon: <Zap className="w-6 h-6 text-purple-500" />,
       title: "Power-ups",
       description: "Use 50/50, tempo extra ou pular questão"
+    },
+    {
+      icon: <Trophy className="w-6 h-6 text-green-500" />,
+      title: "Sem Limite",
+      description: "Responda todas as questões sem perder por erros"
     }
   ];
 
@@ -275,17 +286,18 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
           {/* Stats Preview */}
           <Card className="bg-white/5 backdrop-blur-sm border-white/10 text-white">
             <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-blue-400">20</div>
+                  <div className="text-2xl font-bold text-blue-400">
+                    {selectedChallengeType === "OAB_1_FASE" 
+                      ? (questionsCount?.OAB_1_FASE || 450)
+                      : (questionsCount?.CONCURSOS_MPSP || 81)
+                    }
+                  </div>
                   <div className="text-sm text-blue-200">Questões</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-red-400">3</div>
-                  <div className="text-sm text-blue-200">Vidas</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-400">20s</div>
+                  <div className="text-2xl font-bold text-yellow-400">60s</div>
                   <div className="text-sm text-blue-200">Por questão</div>
                 </div>
                 <div>
