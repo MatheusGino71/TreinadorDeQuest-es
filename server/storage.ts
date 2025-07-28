@@ -34,6 +34,7 @@ export interface IStorage {
 
   // User answer operations
   saveUserAnswer(insertUserAnswer: InsertUserAnswer): Promise<UserAnswer>;
+  getSessionAnswers(sessionId: string): Promise<UserAnswer[]>;
   getUserAnswers(userId: string, limit?: number): Promise<UserAnswer[]>;
   getUserAnswersBySession(sessionId: string): Promise<UserAnswer[]>;
   getUserStats(userId: string, challengeType?: string): Promise<{
@@ -139,6 +140,10 @@ export class MemStorage implements IStorage {
       createdAt: new Date()
     };
     return userAnswer;
+  }
+
+  async getSessionAnswers(sessionId: string): Promise<UserAnswer[]> {
+    return [];
   }
 
   async getUserAnswers(userId: string, limit: number = 100): Promise<UserAnswer[]> {
@@ -285,6 +290,14 @@ export class DatabaseStorage implements IStorage {
       .values(insertUserAnswer)
       .returning();
     return userAnswer;
+  }
+
+  async getSessionAnswers(sessionId: string): Promise<UserAnswer[]> {
+    return await db
+      .select()
+      .from(userAnswers)
+      .where(eq(userAnswers.sessionId, sessionId))
+      .orderBy(userAnswers.createdAt);
   }
 
   async getUserAnswers(userId: string, limit: number = 100): Promise<UserAnswer[]> {

@@ -268,6 +268,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all questions (for statistics modal)
+  app.get("/api/questions/all", async (req, res) => {
+    try {
+      const questions = await storage.getQuestions();
+      res.json(questions);
+    } catch (error) {
+      console.error("Error getting all questions:", error);
+      res.status(500).json({ message: "Failed to get questions" });
+    }
+  });
+
+  // Get session answers (for statistics modal)
+  app.get("/api/session/:sessionId/answers", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const answers = await storage.getSessionAnswers(sessionId);
+      res.json(answers);
+    } catch (error) {
+      console.error("Error getting session answers:", error);
+      res.status(500).json({ message: "Failed to get session answers" });
+    }
+  });
+
   // User statistics endpoints
   app.get("/api/user/:userId/stats", async (req, res) => {
     try {

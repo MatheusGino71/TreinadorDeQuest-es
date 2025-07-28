@@ -17,10 +17,11 @@ interface GameOverModalProps {
   show: boolean;
   session: GameSession;
   onPlayAgain: () => void;
+  onViewStats: () => void;
   onClose: () => void;
 }
 
-export default function GameOverModal({ show, session, onPlayAgain, onClose }: GameOverModalProps) {
+export default function GameOverModal({ show, session, onPlayAgain, onViewStats, onClose }: GameOverModalProps) {
   if (!show) return null;
 
   const accuracy = session.correctAnswers + session.incorrectAnswers > 0 
@@ -58,7 +59,7 @@ export default function GameOverModal({ show, session, onPlayAgain, onClose }: G
             <span>Jogar Novamente</span>
           </button>
           <button
-            onClick={onClose}
+            onClick={onViewStats}
             className="w-full bg-game-surface hover:bg-gray-600 text-game-text rounded-xl py-3 font-semibold transition-colors flex items-center justify-center space-x-2"
           >
             <BarChart className="w-4 h-4" />

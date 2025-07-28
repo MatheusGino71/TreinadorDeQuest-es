@@ -10,6 +10,7 @@ import GameStats from "@/components/game/GameStats";
 import PowerUps from "@/components/game/PowerUps";
 import GameOverModal from "@/components/game/GameOverModal";
 import PauseModal from "@/components/game/PauseModal";
+import StatisticsModal from "@/components/game/StatisticsModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface Question {
@@ -43,6 +44,7 @@ interface GameState {
   isPaused: boolean;
   isGameOver: boolean;
   showGameOver: boolean;
+  showStatistics: boolean;
   usedPowerUps: { [key: string]: boolean };
   eliminatedOptions: number[];
 }
@@ -63,6 +65,7 @@ export default function Game({ user, onLogout }: GameProps) {
     isPaused: false,
     isGameOver: false,
     showGameOver: false,
+    showStatistics: false,
     usedPowerUps: {},
     eliminatedOptions: [],
   });
@@ -98,6 +101,7 @@ export default function Game({ user, onLogout }: GameProps) {
         timeRemaining: 60,
         isGameOver: false,
         showGameOver: false,
+        showStatistics: false,
         usedPowerUps: {},
         eliminatedOptions: [],
       }));
@@ -415,7 +419,14 @@ export default function Game({ user, onLogout }: GameProps) {
         show={gameState.showGameOver}
         session={gameState.session}
         onPlayAgain={() => setGameState(prev => ({ ...prev, showGameOver: false }))}
+        onViewStats={() => setGameState(prev => ({ ...prev, showGameOver: false, showStatistics: true }))}
         onClose={() => setGameState(prev => ({ ...prev, showGameOver: false }))}
+      />
+
+      <StatisticsModal
+        show={gameState.showStatistics}
+        sessionId={gameState.session?.id || null}
+        onClose={() => setGameState(prev => ({ ...prev, showStatistics: false }))}
       />
 
       <PauseModal
