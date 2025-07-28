@@ -229,7 +229,7 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  async getRandomQuestions(count: number, challengeType?: string): Promise<Question[]> {
+  async getRandomQuestions(count: number = 20, challengeType?: string): Promise<Question[]> {
     let results;
     if (!challengeType) {
       results = await db.select().from(questions).orderBy(sql`RANDOM()`).limit(count);

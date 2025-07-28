@@ -349,7 +349,7 @@ export default function Game({ user, onLogout }: GameProps) {
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-game-text-secondary">Progresso da Sessão</span>
               <span className="text-sm text-game-text-secondary">
-                Questão {gameState.currentQuestionIndex + 1} de {gameState.randomizedQuestions.length}
+                Questão {gameState.currentQuestionIndex + 1} de 20
               </span>
             </div>
             <div className="w-full bg-game-surface rounded-full h-3 shadow-inner">

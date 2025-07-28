@@ -95,9 +95,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId, challengeType = "OAB_1_FASE" } = req.body;
       
-      // Get all available questions for the challenge type to determine total
-      const availableQuestions = await storage.getQuestions(challengeType);
-      const totalQuestionsCount = availableQuestions.length;
+      // Limitando a 20 questões por sessão conforme solicitado
+      const sessionQuestionLimit = 20;
       
       // Create game session with dynamic question count (sem sistema de vidas)
       const sessionData: InsertGameSession = {
@@ -110,13 +109,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         incorrectAnswers: 0,
         currentStreak: 0,
         questionNumber: 1,
-        totalQuestions: totalQuestionsCount,
+        totalQuestions: sessionQuestionLimit,
         isGameOver: false
       };
       
       const session = await storage.createGameSession(sessionData);
-      // Retornar todas as questões disponíveis para o frontend gerenciar aleatoriamente
-      const questions = await storage.getQuestions(challengeType);
+      // Retornar apenas 20 questões aleatórias por sessão
+      const questions = await storage.getRandomQuestions(20, challengeType);
       
       res.json({
         session,
