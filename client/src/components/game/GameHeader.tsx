@@ -49,14 +49,14 @@ export default function GameHeader({ session, user, onPause, onLogout }: GameHea
               </div>
             </div>
             <div className="text-center">
+              <div className="text-sm text-game-text-secondary">Vidas</div>
+              <div className="text-xl font-bold text-game-red">{session.lives}</div>
+            </div>
+            <div className="text-center">
               <div className="text-sm text-game-text-secondary">Score</div>
               <div className="text-xl font-bold text-game-yellow">
                 {session.score.toLocaleString()}
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-game-text-secondary">Acertos</div>
-              <div className="text-xl font-bold text-game-green">{session.correctAnswers}</div>
             </div>
             
             <Button

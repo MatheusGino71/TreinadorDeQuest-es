@@ -45,6 +45,11 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
         : "Questões específicas para concursos MPSP"
     },
     {
+      icon: <Heart className="w-6 h-6 text-red-500" />,
+      title: "3 Vidas",
+      description: "Você perde uma vida a cada resposta errada"
+    },
+    {
       icon: <Timer className="w-6 h-6 text-yellow-500" />,
       title: "60 Segundos",
       description: "Tempo limite para responder cada questão"
@@ -53,11 +58,6 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
       icon: <Zap className="w-6 h-6 text-purple-500" />,
       title: "Power-ups",
       description: "Use 50/50, tempo extra ou pular questão"
-    },
-    {
-      icon: <Trophy className="w-6 h-6 text-green-500" />,
-      title: "Sem Limite",
-      description: "Responda todas as questões sem perder por erros"
     }
   ];
 
@@ -286,7 +286,7 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
           {/* Stats Preview */}
           <Card className="bg-white/5 backdrop-blur-sm border-white/10 text-white">
             <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-400">
                     {selectedChallengeType === "OAB_1_FASE" 
@@ -295,6 +295,10 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                     }
                   </div>
                   <div className="text-sm text-blue-200">Questões</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-red-400">3</div>
+                  <div className="text-sm text-blue-200">Vidas</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-yellow-400">60s</div>

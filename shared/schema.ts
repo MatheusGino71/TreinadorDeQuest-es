@@ -26,11 +26,11 @@ export const questions = pgTable("questions", {
 
 export const gameSession = pgTable("game_session", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").notNull().default(1),
   challengeType: text("challenge_type").notNull().default("OAB_1_FASE"), // "OAB_1_FASE" or "CONCURSOS_MPSP"
   score: integer("score").notNull().default(0),
   level: integer("level").notNull().default(1),
-  lives: integer("lives").notNull().default(999),
+  lives: integer("lives").notNull().default(3),
   correctAnswers: integer("correct_answers").notNull().default(0),
   incorrectAnswers: integer("incorrect_answers").notNull().default(0),
   currentStreak: integer("current_streak").notNull().default(0),
