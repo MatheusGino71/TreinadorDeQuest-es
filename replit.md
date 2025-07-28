@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a React-based quiz game application focused on Brazilian legal studies, specifically targeting OAB (Ordem dos Advogados do Brasil) exam preparation. The application features a multiple-choice question format (4 options) with gamification elements like lives, power-ups, and scoring systems.
+This is a React-based quiz game application focused on Brazilian legal studies, specifically targeting OAB (Ordem dos Advogados do Brasil) exam preparation. The application features a multiple-choice question format (4 options) with gamification elements like lives, power-ups, and scoring systems. The app now includes a complete user authentication system with login/registration and a preparation screen before gameplay.
 
 ## User Preferences
 
@@ -30,6 +30,18 @@ Preferred communication style: Simple, everyday language.
 - **Migration**: Drizzle Kit for schema management
 
 ## Key Components
+
+### Authentication System
+- **User Registration**: Complete signup with name, email, password, and phone
+- **Login System**: Secure authentication with password hashing using bcrypt
+- **Session Management**: localStorage-based session persistence
+- **Form Validation**: Real-time validation with Portuguese error messages
+
+### Preparation Screen
+- **Game Instructions**: Interactive tutorial with rules and controls
+- **Power-up Explanations**: Detailed descriptions of available power-ups
+- **Keyboard Controls Guide**: Complete list of game shortcuts
+- **Visual Statistics**: Preview of game parameters (questions, lives, time limits)
 
 ### Game Engine
 - **Game Session Management**: Tracks player progress, score, lives, and streaks

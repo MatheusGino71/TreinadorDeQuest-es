@@ -75,7 +75,7 @@ export default function GameHeader({ session, user, onPause, onLogout }: GameHea
               className="bg-white/10 border-white/20 text-game-text hover:bg-white/20"
             >
               <LogOut className="w-4 h-4 mr-1" />
-              Sair
+              Voltar
             </Button>
           </div>
         </div>

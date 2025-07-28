@@ -6,12 +6,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Game from "@/pages/game";
 import LoginSimple from "@/pages/login-simple";
+import Preparation from "@/pages/preparation";
 import NotFound from "@/pages/not-found";
 import { type User } from "@shared/schema";
 
 function Router() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [gameState, setGameState] = useState<'preparation' | 'playing'>('preparation');
 
   useEffect(() => {
     // Check for stored user session
@@ -30,11 +32,21 @@ function Router() {
   const handleLoginSuccess = (userData: User) => {
     setUser(userData);
     localStorage.setItem('game-oab-user', JSON.stringify(userData));
+    setGameState('preparation'); // Reset to preparation after login
   };
 
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('game-oab-user');
+    setGameState('preparation'); // Reset game state
+  };
+
+  const handleStartGame = () => {
+    setGameState('playing');
+  };
+
+  const handleReturnToPreparation = () => {
+    setGameState('preparation');
   };
 
   if (isLoading) {
@@ -49,9 +61,19 @@ function Router() {
     return <LoginSimple onLoginSuccess={handleLoginSuccess} />;
   }
 
+  if (gameState === 'preparation') {
+    return (
+      <Preparation 
+        user={user} 
+        onStartGame={handleStartGame} 
+        onLogout={handleLogout} 
+      />
+    );
+  }
+
   return (
     <Switch>
-      <Route path="/" component={() => <Game user={user} onLogout={handleLogout} />} />
+      <Route path="/" component={() => <Game user={user} onLogout={handleReturnToPreparation} />} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,0 +1,256 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  GamepadIcon, 
+  Scale, 
+  Clock, 
+  Heart, 
+  Zap, 
+  Target, 
+  Trophy,
+  User,
+  LogOut,
+  Play,
+  BookOpen,
+  Timer,
+  Award
+} from "lucide-react";
+
+interface PreparationProps {
+  user: any;
+  onStartGame: () => void;
+  onLogout: () => void;
+}
+
+export default function Preparation({ user, onStartGame, onLogout }: PreparationProps) {
+  const [showInstructions, setShowInstructions] = useState(false);
+
+  const gameRules = [
+    {
+      icon: <Target className="w-6 h-6 text-blue-500" />,
+      title: "20 Questões",
+      description: "Responda questões de múltipla escolha sobre Processo Civil"
+    },
+    {
+      icon: <Heart className="w-6 h-6 text-red-500" />,
+      title: "3 Vidas",
+      description: "Você perde uma vida a cada resposta errada"
+    },
+    {
+      icon: <Timer className="w-6 h-6 text-yellow-500" />,
+      title: "20 Segundos",
+      description: "Tempo limite para responder cada questão"
+    },
+    {
+      icon: <Zap className="w-6 h-6 text-purple-500" />,
+      title: "Power-ups",
+      description: "Use 50/50, tempo extra ou pular questão"
+    }
+  ];
+
+  const controls = [
+    { key: "1, 2, 3, 4", action: "Selecionar alternativas" },
+    { key: "Espaço", action: "Pausar/Continuar jogo" },
+    { key: "Q", action: "Usar power-up 50/50" },
+    { key: "W", action: "Usar tempo extra" },
+    { key: "E", action: "Pular questão" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+      {/* Header */}
+      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-blue-600 p-2 rounded-lg">
+                <GamepadIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">GAME OAB</h1>
+                <p className="text-sm text-blue-200">Processo Civil</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-2 rounded-lg">
+                <User className="w-4 h-4 text-blue-200" />
+                <span className="text-white font-medium">{user?.name}</span>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onLogout}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Sair
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4 pt-8">
+        <div className="max-w-4xl w-full">
+          {/* Welcome Section */}
+          <div className="text-center mb-8">
+            <div className="relative inline-flex items-center justify-center mb-4">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-30"></div>
+              <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-full">
+                <Scale className="w-12 h-12 text-white" />
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Prepare-se para o Desafio!
+            </h1>
+            <p className="text-xl text-blue-200 mb-6">
+              Olá, <span className="font-semibold text-white">{user?.name}</span>! 
+              Está pronto para testar seus conhecimentos em Processo Civil?
+            </p>
+          </div>
+
+          {/* Game Rules Cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {gameRules.map((rule, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardContent className="p-6 text-center">
+                  <div className="flex justify-center mb-3">
+                    {rule.icon}
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{rule.title}</h3>
+                  <p className="text-sm text-blue-200">{rule.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <Button
+              onClick={onStartGame}
+              size="lg"
+              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-4 px-8 text-lg min-w-[200px]"
+            >
+              <Play className="w-6 h-6 mr-2" />
+              Iniciar Jogo
+            </Button>
+            
+            <Button
+              onClick={() => setShowInstructions(!showInstructions)}
+              variant="outline"
+              size="lg"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 font-bold py-4 px-8 text-lg min-w-[200px]"
+            >
+              <BookOpen className="w-6 h-6 mr-2" />
+              {showInstructions ? "Ocultar" : "Ver"} Instruções
+            </Button>
+          </div>
+
+          {/* Instructions Panel */}
+          {showInstructions && (
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Como Jogar
+                </CardTitle>
+                <CardDescription className="text-blue-200">
+                  Instruções detalhadas e controles do jogo
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 flex items-center">
+                    <Target className="w-5 h-5 mr-2 text-blue-400" />
+                    Objetivo
+                  </h4>
+                  <p className="text-blue-200 mb-4">
+                    Responda o máximo de questões corretamente para obter a maior pontuação possível. 
+                    Cada resposta correta aumenta sua pontuação e sequência de acertos.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 flex items-center">
+                    <Trophy className="w-5 h-5 mr-2 text-yellow-400" />
+                    Sistema de Pontuação
+                  </h4>
+                  <ul className="text-blue-200 space-y-1">
+                    <li>• <strong>Resposta correta:</strong> 100 pontos base</li>
+                    <li>• <strong>Bônus por dificuldade:</strong> 20 pontos × nível da questão</li>
+                    <li>• <strong>Bônus por tempo:</strong> pontos pelo tempo restante</li>
+                    <li>• <strong>Bônus por sequência:</strong> 10 pontos × sequência (a partir de 3 acertos)</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 flex items-center">
+                    <Zap className="w-5 h-5 mr-2 text-purple-400" />
+                    Power-ups Disponíveis
+                  </h4>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <strong className="text-yellow-400">50/50</strong>
+                      <p className="text-sm text-blue-200 mt-1">Elimina 2 alternativas incorretas</p>
+                    </div>
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <strong className="text-blue-400">Tempo Extra</strong>
+                      <p className="text-sm text-blue-200 mt-1">Adiciona 10 segundos ao cronômetro</p>
+                    </div>
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <strong className="text-green-400">Pular</strong>
+                      <p className="text-sm text-blue-200 mt-1">Pula a questão sem perder vida</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 flex items-center">
+                    <Award className="w-5 h-5 mr-2 text-green-400" />
+                    Controles do Teclado
+                  </h4>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {controls.map((control, index) => (
+                      <div key={index} className="flex justify-between items-center bg-white/5 p-2 rounded">
+                        <span className="font-mono text-yellow-300">{control.key}</span>
+                        <span className="text-blue-200 text-sm">{control.action}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stats Preview */}
+          <Card className="bg-white/5 backdrop-blur-sm border-white/10 text-white">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-blue-400">20</div>
+                  <div className="text-sm text-blue-200">Questões</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-red-400">3</div>
+                  <div className="text-sm text-blue-200">Vidas</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-yellow-400">20s</div>
+                  <div className="text-sm text-blue-200">Por questão</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-400">3</div>
+                  <div className="text-sm text-blue-200">Power-ups</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
+}
