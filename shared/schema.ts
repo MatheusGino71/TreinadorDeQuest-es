@@ -4,13 +4,13 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: integer("id").primaryKey(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const questions = pgTable("questions", {
@@ -26,7 +26,7 @@ export const questions = pgTable("questions", {
 
 export const gameSession = pgTable("game_session", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id),
   challengeType: text("challenge_type").notNull().default("OAB"), // "OAB" or "CONCURSOS"
   score: integer("score").notNull().default(0),
   level: integer("level").notNull().default(1),
@@ -43,8 +43,8 @@ export const gameSession = pgTable("game_session", {
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 }).extend({
+  username: z.string().min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),

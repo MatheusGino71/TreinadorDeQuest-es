@@ -109,8 +109,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Updates (January 28, 2025)
 
-- **Integração Completa das Questões Reais**: Extraídas e implementadas 20+ questões reais do arquivo Excel fornecido
+- **Integração Completa das Questões Reais**: Extraídas e implementadas 15+ questões reais do arquivo Excel fornecido
 - **Categorização por Disciplinas**: Questões organizadas em Direito Penal, Constitucional, Civil, Processo Civil, Trabalho, Empresarial, Administrativo, Ética Profissional, Tributário
 - **Tipos de Desafio Implementados**: OAB 1ª FASE (todas as disciplinas da primeira fase) e CONCURSOS (MPSP, Defensoria Pública, Tribunais, Procuradorias, ENAM, CNU)
 - **Scripts de Extração**: Criados scripts Python para processar dados do Excel e gerar questões limpas
 - **Conteúdo Autêntico**: Todas as questões incluem explicações detalhadas baseadas no conteúdo jurídico real dos cursos
+- **Sistema de API Corrigido**: Resolvidos erros de storage e interface, sistema de jogo totalmente funcional
+- **Filtragem por Tipo**: Sistema filtra questões corretamente por OAB_1_FASE e CONCURSOS

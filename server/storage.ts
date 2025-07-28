@@ -11,10 +11,12 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
 
   // Question operations
   getQuestions(challengeType?: string): Promise<Question[]>;
+  getRandomQuestions(count: number, challengeType?: string): Promise<Question[]>;
   getQuestionById(id: string): Promise<Question | undefined>;
 
   // Game session operations
@@ -41,6 +43,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.username === username);
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.users.size + 1;
     const user: User = {
@@ -60,6 +66,12 @@ export class MemStorage implements IStorage {
     return allQuestions.filter(question => 
       question.challengeType === challengeType
     );
+  }
+
+  async getRandomQuestions(count: number, challengeType?: string): Promise<Question[]> {
+    const filteredQuestions = await this.getQuestions(challengeType);
+    const shuffled = [...filteredQuestions].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
   }
 
   async getQuestionById(id: string): Promise<Question | undefined> {

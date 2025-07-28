@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { answerSchema, powerUpSchema, insertUserSchema, loginUserSchema } from "@shared/schema";
+import { answerSchema, powerUpSchema, insertUserSchema, loginUserSchema, type Question, type InsertGameSession } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -63,15 +63,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new game session
   app.post("/api/game/start", async (req, res) => {
     try {
-      const { userId, challengeType = "OAB" } = req.body;
-      const session = await storage.createGameSession(userId, challengeType);
+      const { userId, challengeType = "OAB_1_FASE" } = req.body;
+      
+      // Create game session
+      const sessionData: InsertGameSession = {
+        userId: userId || 1, // Default user ID if not provided
+        challengeType,
+        score: 0,
+        level: 1,
+        lives: 3,
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        currentStreak: 0,
+        questionNumber: 1,
+        totalQuestions: 20,
+        isGameOver: false
+      };
+      
+      const session = await storage.createGameSession(sessionData);
       const questions = await storage.getRandomQuestions(20, challengeType);
       
       res.json({
         session,
-        questions: questions.map(q => ({ id: q.id, text: q.text, options: q.options, difficulty: q.difficulty, category: q.category, challengeType: q.challengeType })),
+        questions: questions.map((q: Question) => ({ 
+          id: q.id, 
+          text: q.text, 
+          options: q.options, 
+          difficulty: q.difficulty, 
+          category: q.category, 
+          challengeType: q.challengeType 
+        })),
       });
     } catch (error) {
+      console.error("Start game error:", error);
       res.status(500).json({ message: "Failed to start game session" });
     }
   });
