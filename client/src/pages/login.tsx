@@ -115,7 +115,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               <Scale className="h-4 w-4 text-yellow-500 absolute -top-1 -right-1" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              GAME OAB
+              Treinador de Questões
             </h1>
           </div>
           <CardTitle className="text-xl">
@@ -123,8 +123,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           </CardTitle>
           <CardDescription>
             {isLogin 
-              ? "Faça login para continuar jogando" 
-              : "Cadastre-se para começar a jogar"
+              ? "Faça login para continuar treinando" 
+              : "Cadastre-se para começar a treinar"
             }
           </CardDescription>
         </CardHeader>
