@@ -44,7 +44,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
 }).extend({
-  username: z.string().min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
+  username: z.string().min(3, "Nome de usuário deve ter pelo menos 3 caracteres").optional(),
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),

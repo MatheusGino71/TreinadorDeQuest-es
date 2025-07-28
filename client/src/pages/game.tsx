@@ -175,8 +175,8 @@ export default function Game({ user, onLogout }: GameProps) {
       setGameState(prev => {
         if (prev.timeRemaining <= 1) {
           // Time's up - submit random wrong answer
-          const currentQuestion = prev.questions[prev.currentQuestionIndex];
-          if (currentQuestion) {
+          const currentQuestion = prev.questions?.[prev.currentQuestionIndex];
+          if (currentQuestion && prev.questions && prev.currentQuestionIndex < prev.questions.length) {
             submitAnswerMutation.mutate({
               questionId: currentQuestion.id,
               answerIndex: -1, // Invalid answer index to mark as incorrect
@@ -198,9 +198,9 @@ export default function Game({ user, onLogout }: GameProps) {
       if (gameState.isPaused || gameState.isGameOver) return;
 
       const key = event.key.toLowerCase();
-      const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+      const currentQuestion = gameState.questions?.[gameState.currentQuestionIndex];
 
-      if (!currentQuestion) return;
+      if (!currentQuestion || !gameState.questions || gameState.currentQuestionIndex >= gameState.questions.length) return;
 
       switch (key) {
         case "1":
@@ -228,8 +228,8 @@ export default function Game({ user, onLogout }: GameProps) {
   const handleAnswer = useCallback((answerIndex: number) => {
     if (gameState.isPaused || gameState.isGameOver || submitAnswerMutation.isPending) return;
 
-    const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-    if (!currentQuestion) return;
+    const currentQuestion = gameState.questions?.[gameState.currentQuestionIndex];
+    if (!currentQuestion || !gameState.questions || gameState.currentQuestionIndex >= gameState.questions.length) return;
 
     submitAnswerMutation.mutate({
       questionId: currentQuestion.id,
@@ -282,7 +282,7 @@ export default function Game({ user, onLogout }: GameProps) {
     );
   }
 
-  if (!gameState.session || gameState.questions.length === 0) {
+  if (!gameState.session || !gameState.questions || gameState.questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -298,8 +298,8 @@ export default function Game({ user, onLogout }: GameProps) {
     );
   }
 
-  const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-  const progress = (gameState.currentQuestionIndex / gameState.questions.length) * 100;
+  const currentQuestion = gameState.questions?.[gameState.currentQuestionIndex];
+  const progress = gameState.questions ? (gameState.currentQuestionIndex / gameState.questions.length) * 100 : 0;
 
   return (
     <div className="min-h-screen flex flex-col">

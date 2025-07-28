@@ -8,25 +8,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User registration
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      // Don't validate username - we'll auto-generate it
+      const { name, email, password, phone } = req.body;
+      
+      // Basic validation
+      if (!name || !email || !password || !phone) {
+        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
       
       // Check if user already exists
-      const existingUser = await storage.getUserByEmail(userData.email);
+      const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({ message: "Email já está em uso" });
       }
       
       // Hash password
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
       
-      // Create user
+      // Create user with auto-generated username
       const user = await storage.createUser({
-        ...userData,
+        username: `user_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`, // Auto-generate username
+        name,
+        email,
         password: hashedPassword,
+        phone,
       });
       
       // Return user without password
-      const { password, ...userWithoutPassword } = user;
+      const { password: _, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword });
     } catch (error) {
       console.error("Registration error:", error);
