@@ -73,7 +73,7 @@ export default function Game({ user, onLogout }: GameProps) {
         userId: user?.id,
         challengeType
       });
-      return response;
+      return response.json();
     },
     onSuccess: (data) => {
       setGameState(prev => ({
