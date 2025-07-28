@@ -119,3 +119,5 @@ Preferred communication style: Simple, everyday language.
 - **Correção de Import**: Resolvido problema de carregamento TypeScript/JavaScript das questões
 - **Sistema de Vidas Removido**: Jogo agora permite responder todas as questões sem limitação de erros
 - **Tempo Aumentado**: Tempo por questão alterado de 20 segundos para 1 minuto (60 segundos)
+- **Migração para PostgreSQL**: Todas as 50 questões do Excel agora salvas no banco de dados
+- **Storage Atualizado**: Sistema agora usa DatabaseStorage em vez de MemStorage para carregamento das questões
