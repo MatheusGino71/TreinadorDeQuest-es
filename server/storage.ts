@@ -4,9 +4,11 @@ import type {
   Question, 
   GameSession, 
   InsertUser,
-  InsertGameSession 
+  InsertGameSession,
+  UserAnswer,
+  InsertUserAnswer
 } from "@shared/schema";
-import { users, questions, gameSession } from "@shared/schema";
+import { users, questions, gameSession, userAnswers } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -29,6 +31,23 @@ export interface IStorage {
   createGameSession(insertGameSession: InsertGameSession): Promise<GameSession>;
   getGameSession(id: string): Promise<GameSession | undefined>;
   updateGameSession(id: string, updates: Partial<GameSession>): Promise<GameSession | undefined>;
+
+  // User answer operations
+  saveUserAnswer(insertUserAnswer: InsertUserAnswer): Promise<UserAnswer>;
+  getUserAnswers(userId: string, limit?: number): Promise<UserAnswer[]>;
+  getUserAnswersBySession(sessionId: string): Promise<UserAnswer[]>;
+  getUserStats(userId: string, challengeType?: string): Promise<{
+    totalAnswered: number;
+    correctAnswers: number;
+    incorrectAnswers: number;
+    averageTimeSpent: number;
+    categoryStats: Array<{
+      category: string;
+      total: number;
+      correct: number;
+      percentage: number;
+    }>;
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -110,6 +129,45 @@ export class MemStorage implements IStorage {
     
     this.gameSessions.set(id, updatedSession);
     return updatedSession;
+  }
+
+  // User answer operations (MemStorage - basic implementation)
+  async saveUserAnswer(insertUserAnswer: InsertUserAnswer): Promise<UserAnswer> {
+    const userAnswer: UserAnswer = {
+      id: randomUUID(),
+      ...insertUserAnswer,
+      createdAt: new Date()
+    };
+    return userAnswer;
+  }
+
+  async getUserAnswers(userId: string, limit: number = 100): Promise<UserAnswer[]> {
+    return [];
+  }
+
+  async getUserAnswersBySession(sessionId: string): Promise<UserAnswer[]> {
+    return [];
+  }
+
+  async getUserStats(userId: string, challengeType?: string): Promise<{
+    totalAnswered: number;
+    correctAnswers: number;
+    incorrectAnswers: number;
+    averageTimeSpent: number;
+    categoryStats: Array<{
+      category: string;
+      total: number;
+      correct: number;
+      percentage: number;
+    }>;
+  }> {
+    return {
+      totalAnswered: 0,
+      correctAnswers: 0,
+      incorrectAnswers: 0,
+      averageTimeSpent: 0,
+      categoryStats: []
+    };
   }
 
   private initializeQuestions() {
@@ -218,6 +276,84 @@ export class DatabaseStorage implements IStorage {
       .where(eq(gameSession.id, id))
       .returning();
     return session || undefined;
+  }
+
+  // User answer operations
+  async saveUserAnswer(insertUserAnswer: InsertUserAnswer): Promise<UserAnswer> {
+    const [userAnswer] = await db
+      .insert(userAnswers)
+      .values(insertUserAnswer)
+      .returning();
+    return userAnswer;
+  }
+
+  async getUserAnswers(userId: string, limit: number = 100): Promise<UserAnswer[]> {
+    return await db
+      .select()
+      .from(userAnswers)
+      .where(eq(userAnswers.userId, userId))
+      .orderBy(sql`${userAnswers.createdAt} DESC`)
+      .limit(limit);
+  }
+
+  async getUserAnswersBySession(sessionId: string): Promise<UserAnswer[]> {
+    return await db
+      .select()
+      .from(userAnswers)
+      .where(eq(userAnswers.sessionId, sessionId))
+      .orderBy(sql`${userAnswers.createdAt} ASC`);
+  }
+
+  async getUserStats(userId: string, challengeType?: string): Promise<{
+    totalAnswered: number;
+    correctAnswers: number;
+    incorrectAnswers: number;
+    averageTimeSpent: number;
+    categoryStats: Array<{
+      category: string;
+      total: number;
+      correct: number;
+      percentage: number;
+    }>;
+  }> {
+    let query = db.select().from(userAnswers).where(eq(userAnswers.userId, userId));
+    
+    if (challengeType) {
+      query = query.where(eq(userAnswers.challengeType, challengeType));
+    }
+
+    const answers = await query;
+    
+    const totalAnswered = answers.length;
+    const correctAnswers = answers.filter(a => a.isCorrect).length;
+    const incorrectAnswers = totalAnswered - correctAnswers;
+    const averageTimeSpent = totalAnswered > 0 
+      ? Math.round(answers.reduce((sum, a) => sum + a.timeSpent, 0) / totalAnswered)
+      : 0;
+
+    // Category stats
+    const categoryMap = new Map<string, {total: number, correct: number}>();
+    answers.forEach(answer => {
+      const current = categoryMap.get(answer.category) || {total: 0, correct: 0};
+      current.total++;
+      if (answer.isCorrect) current.correct++;
+      categoryMap.set(answer.category, current);
+    });
+
+    const categoryStats = Array.from(categoryMap.entries()).map(([category, stats]) => ({
+      category,
+      total: stats.total,
+      correct: stats.correct,
+      percentage: Math.round((stats.correct / stats.total) * 100)
+    })).sort((a, b) => b.total - a.total);
+
+    return {
+      totalAnswered,
+      correctAnswers,
+      incorrectAnswers,
+      averageTimeSpent,
+      categoryStats
+    };
   }
 }
 

@@ -26,7 +26,7 @@ export const questions = pgTable("questions", {
 
 export const gameSession = pgTable("game_session", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: integer("user_id").notNull().default(1),
+  userId: varchar("user_id").notNull(),
   challengeType: text("challenge_type").notNull().default("OAB_1_FASE"), // "OAB_1_FASE" or "CONCURSOS_MPSP"
   score: integer("score").notNull().default(0),
   level: integer("level").notNull().default(1),
@@ -37,6 +37,22 @@ export const gameSession = pgTable("game_session", {
   questionNumber: integer("question_number").notNull().default(1),
   totalQuestions: integer("total_questions").notNull().default(20),
   isGameOver: boolean("is_game_over").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Nova tabela para armazenar as respostas dos usuários
+export const userAnswers = pgTable("user_answers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  sessionId: varchar("session_id").notNull(),
+  questionId: varchar("question_id").notNull(),
+  userAnswerIndex: integer("user_answer_index").notNull(), // -1 for timeout, 0-3 for multiple choice
+  correctAnswerIndex: integer("correct_answer_index").notNull(),
+  isCorrect: boolean("is_correct").notNull(),
+  timeSpent: integer("time_spent").notNull(), // Time spent on question in seconds
+  challengeType: text("challenge_type").notNull(),
+  category: text("category").notNull(),
+  difficulty: integer("difficulty").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -65,6 +81,11 @@ export const insertGameSessionSchema = createInsertSchema(gameSession).omit({
   createdAt: true,
 });
 
+export const insertUserAnswerSchema = createInsertSchema(userAnswers).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type LoginUser = z.infer<typeof loginUserSchema>;
@@ -72,6 +93,8 @@ export type InsertQuestion = z.infer<typeof insertQuestionSchema>;
 export type Question = typeof questions.$inferSelect;
 export type InsertGameSession = z.infer<typeof insertGameSessionSchema>;
 export type GameSession = typeof gameSession.$inferSelect;
+export type InsertUserAnswer = z.infer<typeof insertUserAnswerSchema>;
+export type UserAnswer = typeof userAnswers.$inferSelect;
 
 // Additional types for game state
 export const answerSchema = z.object({

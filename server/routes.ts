@@ -101,7 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create game session with dynamic question count (sem sistema de vidas)
       const sessionData: InsertGameSession = {
-        userId: 1, // Default user ID
+        userId: userId || "anonymous-user", // Use provided userId or default
         challengeType,
         score: 0,
         level: 1,
@@ -186,6 +186,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isGameOver: session.questionNumber >= session.totalQuestions || (!isCorrect && session.lives - 1 <= 0), // Game over por questões ou vidas
       });
 
+      // Save user answer to database for tracking
+      if (updatedSession) {
+        try {
+          await storage.saveUserAnswer({
+            userId: session.userId,
+            sessionId: session.id,
+            questionId: question.id,
+            userAnswerIndex: answerIndex,
+            correctAnswerIndex: question.correctAnswerIndex,
+            isCorrect: isCorrect,
+            timeSpent: 60 - (timeRemaining || 0), // Calculate time spent
+            challengeType: session.challengeType,
+            category: question.category,
+            difficulty: question.difficulty
+          });
+        } catch (error) {
+          console.error("Error saving user answer:", error);
+          // Don't fail the request if answer saving fails
+        }
+      }
+
       res.json({
         correct: isCorrect,
         scoreIncrease,
@@ -240,6 +261,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result);
     } catch (error) {
       res.status(400).json({ message: "Invalid power-up request" });
+    }
+  });
+
+  // User statistics endpoints
+  app.get("/api/user/:userId/stats", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { challengeType } = req.query;
+      
+      const stats = await storage.getUserStats(userId, challengeType as string);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting user stats:", error);
+      res.status(500).json({ message: "Failed to get user stats" });
+    }
+  });
+
+  // User answer history
+  app.get("/api/user/:userId/answers", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { limit } = req.query;
+      
+      const answers = await storage.getUserAnswers(userId, limit ? parseInt(limit as string) : undefined);
+      res.json(answers);
+    } catch (error) {
+      console.error("Error getting user answers:", error);
+      res.status(500).json({ message: "Failed to get user answers" });
+    }
+  });
+
+  // Session answer history
+  app.get("/api/session/:sessionId/answers", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      const answers = await storage.getUserAnswersBySession(sessionId);
+      res.json(answers);
+    } catch (error) {
+      console.error("Error getting session answers:", error);
+      res.status(500).json({ message: "Failed to get session answers" });
     }
   });
 

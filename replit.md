@@ -123,3 +123,8 @@ Preferred communication style: Simple, everyday language.
 - **Storage Atualizado**: Sistema agora usa DatabaseStorage em vez de MemStorage para carregamento das questões
 - **Expansão Massiva**: 14.333 questões extraídas do novo Excel e 531 questões diversificadas migradas
 - **Categorias Ampliadas**: 9 categorias jurídicas diferentes com 450 questões OAB + 81 questões CONCURSOS
+- **Sistema de Rastreamento de Respostas**: Implementado armazenamento completo das respostas dos usuários no banco
+- **Tabela user_answers**: Nova tabela para armazenar histórico detalhado de cada resposta do usuário
+- **Estatísticas de Usuário**: Endpoints para consultar performance, acertos por categoria e tempo médio
+- **Histórico de Sessões**: Capacidade de visualizar todas as respostas de uma sessão específica
+- **Branding Atualizado**: "Powered by BIPETech" adicionado em todas as interfaces principais
