@@ -1,6 +1,4 @@
-import { Question } from "./shared/schema";
-
-export const questionsFromExcel: Omit<Question, 'id'>[] = [
+const questionsFromExcel = [
   {
     text: "João da Silva foi denunciado por homicídio qualificado por motivo fútil. Nos debates orais ocorridos na primeira fase do procedimento de júri, a Defesa alegou que João agira em estrito cumprimento de dever legal, postulando sua absolvição sumária. Ao proferir sua decisão, o juiz rejeitou a tese de estrito cumprimento de dever legale o pedido de absolvição sumária, e pronunciou João por homicídio simples, afastando a qualificadora contida na denúncia. A decisão de pronúncia foi confirmada pelo Tribunal de Justiça, operando-se a preclusão.Considerando tal narrativa, assinale a afirmativa correta.",
     options: ["Nos debates orais perante os jurados, o promotor de justiça não poderá sustentar a qualificadora de motivo fútil, mas a defesa poderá alegar a tese de estrito cumprimento de dever legal.", "Nos debates orais perante os jurados, o promotor de justiça poderá sustentar a qualificadora de motivo fútil e a defesa poderá alegar a tese de estrito cumprimento de dever legal.", "Nos debates orais perante os jurados, o promotor de justiça não poderá sustentar a qualificadora de motivo fútil e a defesa não poderá alegar a tese de estrito cumprimento de dever legal.", "Nos debates orais perante os jurados, o promotor de justiça poderá sustentar a qualificadora de motivo fútil, mas a defesa não poderá alegar a tese de estrito cumprimento de dever legal."],
@@ -453,3 +451,4 @@ export const questionsFromExcel: Omit<Question, 'id'>[] = [
   }
 
 ];
+module.exports = { questionsFromExcel };

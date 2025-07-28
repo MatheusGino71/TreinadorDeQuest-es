@@ -25,7 +25,7 @@ interface PreparationProps {
 
 export default function Preparation({ user, onStartGame, onLogout }: PreparationProps) {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB_1_FASE" | "CONCURSOS">("OAB_1_FASE");
+  const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB_1_FASE" | "CONCURSOS_MPSP">("OAB_1_FASE");
 
   const gameRules = [
     {
@@ -138,9 +138,9 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                 </button>
 
                 <button
-                  onClick={() => setSelectedChallengeType("CONCURSOS")}
+                  onClick={() => setSelectedChallengeType("CONCURSOS_MPSP")}
                   className={`p-6 rounded-xl border-2 transition-all duration-300 min-w-[250px] ${
-                    selectedChallengeType === "CONCURSOS"
+                    selectedChallengeType === "CONCURSOS_MPSP"
                       ? "border-purple-400 bg-purple-500/20 shadow-lg shadow-purple-500/20"
                       : "border-white/20 bg-white/5 hover:border-purple-300 hover:bg-purple-500/10"
                   }`}

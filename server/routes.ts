@@ -74,7 +74,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId, challengeType = "OAB_1_FASE" } = req.body;
       
-      // Create game session
+      // Get all available questions for the challenge type to determine total
+      const availableQuestions = await storage.getQuestions(challengeType);
+      const totalQuestionsCount = availableQuestions.length;
+      
+      // Create game session with dynamic question count
       const sessionData: InsertGameSession = {
         userId: userId || 1, // Default user ID if not provided
         challengeType,
@@ -85,12 +89,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         incorrectAnswers: 0,
         currentStreak: 0,
         questionNumber: 1,
-        totalQuestions: 20,
+        totalQuestions: totalQuestionsCount,
         isGameOver: false
       };
       
       const session = await storage.createGameSession(sessionData);
-      const questions = await storage.getRandomQuestions(20, challengeType);
+      const questions = await storage.getRandomQuestions(totalQuestionsCount, challengeType);
       
       res.json({
         session,
