@@ -1,4 +1,4 @@
-# Game OAB - Legal Study Game
+# Treinador de Questões - Sistema de Estudo Jurídico
 
 ## Overview
 

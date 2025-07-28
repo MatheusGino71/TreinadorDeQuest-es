@@ -80,7 +80,7 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                 <GamepadIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">GAME OAB</h1>
+                <h1 className="text-2xl font-bold text-white">Treinador de Questões</h1>
                 <p className="text-sm text-blue-200">Estudo Jurídico Interativo</p>
               </div>
             </div>

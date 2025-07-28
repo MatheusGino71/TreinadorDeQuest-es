@@ -31,7 +31,7 @@ export default function GameHeader({ session, user, onPause, onLogout }: GameHea
               <Gamepad className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-game-text">GAME OAB</h1>
+              <h1 className="text-2xl font-bold text-game-text">Treinador de Questões</h1>
               <p className="text-sm text-game-text-secondary">Processo Civil</p>
             </div>
           </div>
