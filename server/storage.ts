@@ -10,10 +10,12 @@ import { users, questions, gameSession } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+// Import commented out - using database questions instead
+// import { questionsFromNewExcel } from "./questions-data";
 
 export interface IStorage {
   // User operations
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
@@ -39,12 +41,13 @@ export class MemStorage implements IStorage {
   }
 
   // User operations
-  async getUser(id: number): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.id === id);
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    // Username not implemented in current schema
+    return undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -52,14 +55,14 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.users.size + 1;
+    const id = randomUUID();
     const user: User = {
       id,
       ...insertUser,
-      username: insertUser.username || `user_${id}`,
-      createdAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
-    this.users.set(String(id), user);
+    this.users.set(id, user);
     return user;
   }
 
@@ -110,29 +113,22 @@ export class MemStorage implements IStorage {
   }
 
   private initializeQuestions() {
-    // Usar TODAS as 50 questões do arquivo Excel processado
-    questionsFromExcel.forEach((questionData, index) => {
-      const id = `Q${String(index + 1).padStart(3, '0')}`;
-      const question: Question = {
-        id,
-        ...questionData
-      };
-      this.questions.set(id, question);
-    });
+    // Questions loaded from database in DatabaseStorage
+    // This method is for MemStorage only - keeping empty for now
   }
 }
 
 // PostgreSQL Storage Implementation
 export class DatabaseStorage implements IStorage {
   // User operations
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    // Note: Username functionality not implemented in current schema
+    return undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
