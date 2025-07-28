@@ -166,9 +166,12 @@ export default function LoginSimple({ onLoginSuccess }: LoginProps) {
               <GamepadIcon className="h-8 w-8 text-blue-600" />
               <Scale className="h-4 w-4 text-yellow-500 absolute -top-1 -right-1" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Treinador de Questões
-            </h1>
+            <div className="flex flex-col items-center">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Treinador de Questões
+              </h1>
+              <span className="text-xs text-gray-500 mt-1">Powered by BIPETech</span>
+            </div>
           </div>
           <CardTitle className="text-xl">
             {isLogin ? "Entrar na sua conta" : "Criar nova conta"}

@@ -80,8 +80,13 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                 <GamepadIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Treinador de Questões</h1>
-                <p className="text-sm text-blue-200">Estudo Jurídico Interativo</p>
+                <div className="flex flex-col">
+                  <h1 className="text-2xl font-bold text-white">Treinador de Questões</h1>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-blue-200">Estudo Jurídico Interativo</p>
+                    <span className="text-xs text-blue-300">Powered by BIPETech</span>
+                  </div>
+                </div>
               </div>
             </div>
 
