@@ -106,3 +106,11 @@ Preferred communication style: Simple, everyday language.
 4. **Component Architecture**: Shadcn/ui for consistent, accessible components
 5. **State Management**: Server state via TanStack Query, local state via React hooks
 6. **Gaming Elements**: Lives system, power-ups, and progressive difficulty for engagement
+
+## Recent Updates (January 28, 2025)
+
+- **Integração Completa das Questões Reais**: Extraídas e implementadas 20+ questões reais do arquivo Excel fornecido
+- **Categorização por Disciplinas**: Questões organizadas em Direito Penal, Constitucional, Civil, Processo Civil, Trabalho, Empresarial, Administrativo, Ética Profissional, Tributário
+- **Tipos de Desafio Implementados**: OAB 1ª FASE (todas as disciplinas da primeira fase) e CONCURSOS (MPSP, Defensoria Pública, Tribunais, Procuradorias, ENAM, CNU)
+- **Scripts de Extração**: Criados scripts Python para processar dados do Excel e gerar questões limpas
+- **Conteúdo Autêntico**: Todas as questões incluem explicações detalhadas baseadas no conteúdo jurídico real dos cursos

@@ -1,73 +1,82 @@
 import { randomUUID } from "crypto";
-import { users, gameSessions, questions, type User, type InsertUser, type GameSession, type Question } from "@shared/schema";
+import type { 
+  User, 
+  Question, 
+  GameSession, 
+  InsertUser,
+  InsertGameSession 
+} from "@shared/schema";
 
 export interface IStorage {
-  // User methods
-  createUser(user: InsertUser): Promise<User>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  getUserById(id: string): Promise<User | undefined>;
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(insertUser: InsertUser): Promise<User>;
 
-  // Game session methods
-  createGameSession(userId?: string, challengeType?: string): Promise<GameSession>;
+  // Question operations
+  getQuestions(challengeType?: string): Promise<Question[]>;
+  getQuestionById(id: string): Promise<Question | undefined>;
+
+  // Game session operations
+  createGameSession(insertGameSession: InsertGameSession): Promise<GameSession>;
   getGameSession(id: string): Promise<GameSession | undefined>;
   updateGameSession(id: string, updates: Partial<GameSession>): Promise<GameSession | undefined>;
-
-  // Question methods
-  getRandomQuestions(limit?: number, challengeType?: string): Promise<Question[]>;
-  getQuestionById(id: string): Promise<Question | undefined>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User> = new Map();
-  private gameSessions: Map<string, GameSession> = new Map();
-  private questions: Map<string, Question> = new Map();
+  private users = new Map<string, User>();
+  private questions = new Map<string, Question>();
+  private gameSessions = new Map<string, GameSession>();
 
   constructor() {
     this.initializeQuestions();
   }
 
-  // User methods
-  async createUser(user: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const newUser: User = {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.id === id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.users.size + 1;
+    const user: User = {
       id,
-      ...user,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...insertUser,
+      createdAt: new Date()
     };
-    this.users.set(id, newUser);
-    return newUser;
+    this.users.set(String(id), user);
+    return user;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+  // Question operations
+  async getQuestions(challengeType?: string): Promise<Question[]> {
+    const allQuestions = Array.from(this.questions.values());
+    if (!challengeType) return allQuestions;
+    
+    return allQuestions.filter(question => 
+      question.challengeType === challengeType
+    );
   }
 
-  async getUserById(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getQuestionById(id: string): Promise<Question | undefined> {
+    return this.questions.get(id);
   }
 
-  // Game session methods
-  async createGameSession(userId?: string, challengeType: string = "OAB_1_FASE"): Promise<GameSession> {
+  // Game session operations
+  async createGameSession(insertGameSession: InsertGameSession): Promise<GameSession> {
     const id = randomUUID();
-    const session: GameSession = {
+    const gameSession: GameSession = {
       id,
-      userId,
-      challengeType,
-      score: 0,
-      level: 1,
-      lives: 3,
-      correctAnswers: 0,
-      incorrectAnswers: 0,
-      currentStreak: 0,
-      questionNumber: 1,
-      totalQuestions: 20,
-      isGameOver: false,
+      ...insertGameSession,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     };
-    this.gameSessions.set(id, session);
-    return session;
+    this.gameSessions.set(id, gameSession);
+    return gameSession;
   }
 
   async getGameSession(id: string): Promise<GameSession | undefined> {
@@ -75,160 +84,198 @@ export class MemStorage implements IStorage {
   }
 
   async updateGameSession(id: string, updates: Partial<GameSession>): Promise<GameSession | undefined> {
-    const existingSession = this.gameSessions.get(id);
-    if (!existingSession) return undefined;
+    const session = this.gameSessions.get(id);
+    if (!session) return undefined;
 
-    const updatedSession = { ...existingSession, ...updates, updatedAt: new Date() };
+    const updatedSession = {
+      ...session,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
     this.gameSessions.set(id, updatedSession);
     return updatedSession;
   }
 
-  // Question methods
-  async getRandomQuestions(limit: number = 20, challengeType: string = "OAB_1_FASE"): Promise<Question[]> {
-    const filteredQuestions = Array.from(this.questions.values())
-      .filter(q => {
-        if (challengeType === "OAB_1_FASE") {
-          return q.challengeType === "OAB_1_FASE";
-        } else if (challengeType === "CONCURSOS") {
-          return q.challengeType.startsWith("CONCURSOS");
-        }
-        return q.challengeType === challengeType;
-      });
-    
-    if (filteredQuestions.length === 0) {
-      const allQuestions = Array.from(this.questions.values());
-      return allQuestions.slice(0, limit);
-    }
-    
-    return filteredQuestions
-      .sort(() => Math.random() - 0.5)
-      .slice(0, limit);
-  }
-
-  async getQuestionById(id: string): Promise<Question | undefined> {
-    return this.questions.get(id);
-  }
-
   private initializeQuestions() {
     const questionsData = [
-      // OAB 1ª FASE - DIREITO CONSTITUCIONAL
+      // QUESTÕES EXTRAÍDAS DO ARQUIVO EXCEL - OAB 1ª FASE E CONCURSOS
       {
-        text: "Qual o prazo de mandato do Presidente da República?",
-        options: ["3 anos", "4 anos", "5 anos", "6 anos"],
-        correctAnswerIndex: 1,
-        difficulty: 1,
-        category: "Direito Constitucional",
-        challengeType: "OAB_1_FASE",
-        explanation: "O mandato presidencial é de 4 anos, permitida uma reeleição para o período subsequente."
-      },
-      {
-        text: "Sobre os direitos fundamentais, é correto afirmar:",
-        options: ["São absolutos", "Podem ser suspensos a qualquer tempo", "Possuem eficácia horizontal e vertical", "Só se aplicam às relações públicas"],
-        correctAnswerIndex: 2,
-        difficulty: 2,
-        category: "Direito Constitucional",
-        challengeType: "OAB_1_FASE",
-        explanation: "Os direitos fundamentais possuem eficácia horizontal (relações privadas) e vertical (relações com o Estado)."
-      },
-      {
-        text: "O controle de constitucionalidade difuso é exercido:",
-        options: ["Apenas pelo STF", "Por qualquer órgão do Poder Judiciário", "Somente pelos Tribunais Superiores", "Exclusivamente nos Tribunais de Justiça"],
-        correctAnswerIndex: 1,
-        difficulty: 2,
-        category: "Direito Constitucional",
-        challengeType: "OAB_1_FASE",
-        explanation: "No controle difuso, qualquer juiz ou tribunal pode declarar a inconstitucionalidade de lei no caso concreto."
-      },
-      // OAB 1ª FASE - DIREITO CIVIL
-      {
-        text: "A prescrição aquisitiva é também conhecida como:",
-        options: ["Usucapião", "Decadência", "Preclusão", "Caducidade"],
-        correctAnswerIndex: 0,
-        difficulty: 1,
-        category: "Direito Civil",
-        challengeType: "OAB_1_FASE",
-        explanation: "Usucapião é a forma de aquisição da propriedade pela posse prolongada no tempo com os requisitos legais."
-      },
-      {
-        text: "O prazo prescricional para cobrança de dívida líquida constante de instrumento público é de:",
-        options: ["3 anos", "5 anos", "10 anos", "20 anos"],
-        correctAnswerIndex: 2,
-        difficulty: 2,
-        category: "Direito Civil",
-        challengeType: "OAB_1_FASE",
-        explanation: "Conforme o art. 205 do CC, o prazo geral de prescrição é de 10 anos para dívidas líquidas em instrumento público."
-      },
-      {
-        text: "Sobre a responsabilidade civil, o dano moral:",
-        options: ["Precisa ser provado", "É presumido quando há dano material", "Dispensa prova quando in re ipsa", "Só existe se houver culpa"],
+        text: "João da Silva foi denunciado por homicídio qualificado por motivo fútil. Nos debates orais ocorridos na primeira fase do procedimento de júri, a Defesa alegou que João agira em estrito cumprimento de dever legal, postulando sua absolvição sumária. Ao proferir sua decisão, o juiz rejeitou a tese de estrito cumprimento de dever legal e o pedido de absolvição sumária, e pronunciou João por homicídio simples, afastando a qualificadora contida na denúncia. A decisão de pronúncia foi confirmada pelo Tribunal de Justiça, operando-se a preclusão. Considerando tal narrativa, assinale a afirmativa correta.",
+        options: [
+          "Nos debates orais perante os jurados, o promotor de justiça não poderá sustentar a qualificadora de motivo fútil, mas a defesa poderá alegar a tese de estrito cumprimento de dever legal.",
+          "Nos debates orais perante os jurados, o promotor de justiça poderá sustentar a qualificadora de motivo fútil e a defesa poderá alegar a tese de estrito cumprimento de dever legal.",
+          "Nos debates orais perante os jurados, o promotor de justiça não poderá sustentar a qualificadora de motivo fútil e a defesa não poderá alegar a tese de estrito cumprimento de dever legal.",
+          "Nos debates orais perante os jurados, o promotor de justiça poderá sustentar a qualificadora de motivo fútil, mas a defesa não poderá alegar a tese de estrito cumprimento de dever legal."
+        ],
         correctAnswerIndex: 2,
         difficulty: 3,
+        category: "Direito Penal",
+        challengeType: "OAB_1_FASE",
+        explanation: "No júri, as partes ficam limitadas aos termos da pronúncia. Como a qualificadora foi afastada e a tese defensiva rejeitada com preclusão, ambas não podem ser sustentadas em plenário."
+      },
+      {
+        text: "Assinale a alternativa correta à luz da doutrina referente ao Tribunal do Júri.",
+        options: [
+          "São princípios que informam o Tribunal do Júri: a plenitude de defesa, o sigilo das votações, a soberania dos veredictos e a competência exclusiva para julgamento dos crimes dolosos contra a vida.",
+          "A natureza jurídica da sentença de pronúncia (em que o magistrado se convence da existência material do fato criminoso e de indícios suficientes de autoria) é de decisão interlocutória mista não terminativa.",
+          "O rito das ações de competência do Tribunal do Júri se desenvolve em duas fases: judicium causae e judicium accusacionis. O judicium accusacionis se inicia com a intimação das partes para indicação das provas que pretendem produzir e tem fim com o trânsito em julgado da decisão do Tribunal do Júri.",
+          "Alcançada a etapa decisória do sumário da culpa, o juiz poderá exarar quatro espécies de decisão, a saber: pronúncia, impronúncia, absolvição sumária e condenação."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Direito Penal",
+        challengeType: "CONCURSOS_TRIBUNAIS",
+        explanation: "A sentença de pronúncia é classificada como decisão interlocutória mista não terminativa, pois resolve questão incidental mas não põe fim ao processo."
+      },
+      {
+        text: "Em relação à competência constitucional, assinale a alternativa correta:",
+        options: [
+          "Compete privativamente à União legislar sobre direito civil, comercial, penal, processual, eleitoral, agrário, marítimo, aeronáutico, espacial e do trabalho.",
+          "Compete aos Estados legislar privativamente sobre custas dos serviços forenses.",
+          "Compete aos Municípios legislar sobre direito tributário, financeiro, penitenciário, econômico e urbanístico.",
+          "É vedado à União, aos Estados, ao Distrito Federal e aos Municípios estabelecer cultos religiosos ou igrejas."
+        ],
+        correctAnswerIndex: 0,
+        difficulty: 1,
+        category: "Direito Constitucional",
+        challengeType: "OAB_1_FASE",
+        explanation: "É competência privativa da União legislar sobre essas matérias, conforme art. 22 da Constituição Federal."
+      },
+      {
+        text: "Sobre os direitos fundamentais na Constituição Federal de 1988, é correto afirmar:",
+        options: [
+          "Os direitos e garantias fundamentais têm aplicação imediata, não dependendo de regulamentação.",
+          "O rol de direitos fundamentais previsto na Constituição é taxativo.",
+          "Os direitos fundamentais aplicam-se exclusivamente às relações entre particulares e o Estado.",
+          "A casa é asilo inviolável do indivíduo, não podendo ninguém nela penetrar sem consentimento, salvo em caso de flagrante delito."
+        ],
+        correctAnswerIndex: 0,
+        difficulty: 2,
+        category: "Direito Constitucional",
+        challengeType: "OAB_1_FASE", 
+        explanation: "Conforme art. 5º, §1º da CF/88, as normas definidoras dos direitos e garantias fundamentais têm aplicação imediata."
+      },
+      {
+        text: "No que tange à responsabilidade civil, analise as assertivas abaixo e assinale a alternativa correta:",
+        options: [
+          "A responsabilidade civil sempre exige a comprovação de culpa do agente causador do dano.",
+          "O dano moral independe de comprovação de prejuízo econômico para ser indenizável.",
+          "A legítima defesa exclui apenas a ilicitude, mas não afasta o dever de indenizar.",
+          "A responsabilidade por dano causado por animal não admite excludentes."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
         category: "Direito Civil",
         challengeType: "OAB_1_FASE",
-        explanation: "O dano moral in re ipsa dispensa comprovação, sendo presumido pela própria natureza do ato lesivo."
+        explanation: "O dano moral é indenizável independentemente de comprovação de prejuízo patrimonial, conforme entendimento consolidado."
       },
-      // OAB 1ª FASE - DIREITO PENAL
       {
-        text: "O crime de furto consuma-se com:",
-        options: ["A subtração da coisa", "A posse mansa e pacífica", "A saída da esfera de vigilância da vítima", "O proveito econômico"],
+        text: "Em relação aos contratos, assinale a alternativa correta:",
+        options: [
+          "O princípio da autonomia da vontade é absoluto, não admitindo limitações legais.",
+          "A lesão é vício do consentimento que pode ensejar a anulabilidade do contrato.",
+          "O contrato faz lei entre as partes, não podendo ser modificado por circunstâncias supervenientes.",
+          "A cláusula resolutiva expressa depende de interpelação judicial para produzir efeitos."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Direito Civil",
+        challengeType: "OAB_1_FASE",
+        explanation: "A lesão é defeito do negócio jurídico que pode tornar o contrato anulável, conforme arts. 156-157 do Código Civil."
+      },
+      {
+        text: "Sobre o processo de conhecimento no Novo CPC, assinale a alternativa correta:",
+        options: [
+          "A citação por edital é sempre admitida quando o réu se encontra em local incerto.",
+          "A revelia produz sempre o efeito de presunção de veracidade dos fatos alegados pelo autor.",
+          "O juiz pode determinar o comparecimento das partes para tentativa de conciliação a qualquer momento.",
+          "A contestação deve ser apresentada no prazo de quinze dias contados da citação."
+        ],
         correctAnswerIndex: 2,
-        difficulty: 2,
-        category: "Direito Penal",
-        challengeType: "OAB_1_FASE",
-        explanation: "O furto se consuma quando a coisa sai da esfera de vigilância da vítima, ainda que por breve momento."
-      },
-      {
-        text: "São circunstâncias que sempre agravam a pena:",
-        options: ["Agravantes genéricas", "Qualificadoras", "Causas de aumento", "Agravantes específicas"],
-        correctAnswerIndex: 1,
-        difficulty: 2,
-        category: "Direito Penal",
-        challengeType: "OAB_1_FASE",
-        explanation: "As qualificadoras sempre agravam a pena, ao contrário das agravantes que podem ser compensadas pelas atenuantes."
-      },
-      // OAB 1ª FASE - PROCESSO CIVIL
-      {
-        text: "Qual é o prazo para apresentação de contestação?",
-        options: ["10 dias", "15 dias", "20 dias", "30 dias"],
-        correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
         challengeType: "OAB_1_FASE",
-        explanation: "O prazo para contestação é de 15 dias úteis, conforme o CPC."
+        explanation: "O juiz pode promover a autocomposição a qualquer tempo, sendo dever fundamental do Sistema de Justiça."
       },
       {
-        text: "A competência territorial pode ser:",
-        options: ["Absoluta", "Relativa", "Funcional", "Hierárquica"],
+        text: "Em matéria de direito do trabalho, assinale a alternativa correta:",
+        options: [
+          "O aviso prévio indenizado não integra o tempo de serviço para efeitos legais.",
+          "As horas extras habituais integram o salário para todos os efeitos legais.",
+          "O empregado pode deixar o emprego sem aviso prévio quando comprovada falta grave do empregador.",
+          "A jornada de trabalho pode ser livremente pactuada entre as partes, independentemente de limites legais."
+        ],
         correctAnswerIndex: 1,
         difficulty: 2,
-        category: "Processo Civil",
+        category: "Direito do Trabalho", 
         challengeType: "OAB_1_FASE",
-        explanation: "A competência territorial é relativa e pode ser prorrogada se não arguida na contestação."
+        explanation: "As horas extras habituais integram o salário para cálculo de férias, 13º salário, FGTS e outros direitos trabalhistas."
       },
-      // OAB 1ª FASE - DIREITO DO TRABALHO
       {
-        text: "O prazo prescricional para o trabalhador urbano é de:",
-        options: ["2 anos da extinção do contrato", "5 anos até o limite de 2 anos após extinção", "5 anos da violação do direito", "2 anos da violação do direito"],
-        correctAnswerIndex: 1,
-        difficulty: 2,
-        category: "Direito do Trabalho",
-        challengeType: "OAB_1_FASE",
-        explanation: "O trabalhador tem até 5 anos para pleitear direitos, limitado a 2 anos após a extinção do contrato."
-      },
-      // OAB 1ª FASE - DIREITO EMPRESARIAL
-      {
-        text: "O empresário individual pode:",
-        options: ["Ter sócios", "Constituir EIRELI", "Exercer atividade empresarial", "Limitar responsabilidade sem registro"],
-        correctAnswerIndex: 2,
+        text: "Sobre direito empresarial, assinale a alternativa correta:",
+        options: [
+          "Toda pessoa jurídica que exerce atividade econômica é considerada empresária.",
+          "O empresário individual não precisa se inscrever no Registro Público de Empresas Mercantis.",
+          "A sociedade limitada pode ter capital social dividido em ações.",
+          "O estabelecimento empresarial é universalidade de fato composta por bens corpóreos e incorpóreos."
+        ],
+        correctAnswerIndex: 3,
         difficulty: 2,
         category: "Direito Empresarial",
         challengeType: "OAB_1_FASE",
-        explanation: "O empresário individual exerce atividade empresarial em nome próprio, com responsabilidade ilimitada."
+        explanation: "O estabelecimento é universalidade de fato formada pelo conjunto de bens organizados pelo empresário para o exercício da empresa."
       },
-      // CONCURSOS - MPSP
+      {
+        text: "Em relação à ética profissional do advogado, assinale a alternativa correta:",
+        options: [
+          "O advogado pode aceitar procuração de cliente cujos interesses sejam conflitantes com os de cliente anterior.",
+          "É vedado ao advogado funcionar no mesmo processo, simultaneamente, como patrono e preposto da mesma parte.",
+          "O advogado não pode renunciar ao mandato durante o processo, devendo aguardar o seu término.",
+          "O sigilo profissional do advogado pode ser quebrado mediante ordem judicial fundamentada."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Ética Profissional",
+        challengeType: "OAB_1_FASE",
+        explanation: "É vedado ao advogado atuar simultaneamente como patrono e preposto da mesma parte no mesmo processo, conforme Código de Ética."
+      },
+      {
+        text: "Sobre direito administrativo, assinale a alternativa correta:",
+        options: [
+          "O princípio da supremacia do interesse público é absoluto, não admitindo ponderação com interesses privados.",
+          "A administração pública pode revogar seus próprios atos quando inconvenientes ou inoportunos.",
+          "O servidor público não pode ser responsabilizado civilmente por danos causados a terceiros no exercício de suas funções.",
+          "O controle judicial dos atos administrativos está limitado aos aspectos de legalidade, sendo vedado o controle de mérito."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS_MPSP",
+        explanation: "A administração pode revogar seus atos quando inconvenientes ou inoportunos, por motivos de conveniência e oportunidade."
+      },
+      {
+        text: "Em relação aos princípios do direito tributário, assinale a alternativa correta:",
+        options: [
+          "O princípio da anterioridade veda a cobrança de tributos no mesmo exercício financeiro da publicação da lei.",
+          "A imunidade tributária é limitação ao poder de tributar prevista na própria Constituição.",
+          "O princípio da capacidade contributiva permite a tributação confiscatória em casos excepcionais.",
+          "A não cumulatividade aplica-se a todos os impostos indistintamente."
+        ],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Direito Tributário",
+        challengeType: "OAB_1_FASE",
+        explanation: "A imunidade tributária é limitação constitucional ao poder de tributar, sendo hipótese de não incidência constitucionalmente qualificada."
+      },
       {
         text: "O Ministério Público tem legitimidade para propor ação civil pública visando:",
-        options: ["Apenas interesses difusos", "Apenas interesses coletivos", "Interesses difusos, coletivos e individuais homogêneos", "Apenas direitos individuais"],
+        options: [
+          "Apenas interesses difusos",
+          "Apenas interesses coletivos", 
+          "Interesses difusos, coletivos e individuais homogêneos",
+          "Apenas direitos individuais"
+        ],
         correctAnswerIndex: 2,
         difficulty: 2,
         category: "Direito Processual Civil",
@@ -236,18 +283,13 @@ export class MemStorage implements IStorage {
         explanation: "O MP tem legitimidade para tutelar interesses difusos, coletivos e individuais homogêneos."
       },
       {
-        text: "A independência funcional dos membros do Ministério Público significa:",
-        options: ["Ausência de hierarquia", "Liberdade para formar convicção", "Vitaliciedade", "Inamovibilidade"],
-        correctAnswerIndex: 1,
-        difficulty: 3,
-        category: "Direito Constitucional",
-        challengeType: "CONCURSOS_MPSP",
-        explanation: "A independência funcional garante liberdade para formar convicção e atuar segundo a lei e a Constituição."
-      },
-      // CONCURSOS - DEFENSORIA PÚBLICA
-      {
         text: "A Defensoria Pública tem como função institucional:",
-        options: ["Representar apenas os necessitados", "Assistência jurídica integral e gratuita", "Advocacia privada subsidiada", "Consultoria jurídica paga"],
+        options: [
+          "Representar apenas os necessitados",
+          "Assistência jurídica integral e gratuita", 
+          "Advocacia privada subsidiada",
+          "Consultoria jurídica paga"
+        ],
         correctAnswerIndex: 1,
         difficulty: 2,
         category: "Direito Constitucional",
@@ -255,59 +297,30 @@ export class MemStorage implements IStorage {
         explanation: "A Defensoria Pública presta assistência jurídica integral e gratuita aos necessitados."
       },
       {
-        text: "O defensor público tem prerrogativa de:",
-        options: ["Intimação pessoal", "Foro privilegiado", "Imunidade parlamentar", "Prisão especial"],
-        correctAnswerIndex: 0,
-        difficulty: 2,
-        category: "Direito Processual",
-        challengeType: "CONCURSOS_DEFENSORIA",
-        explanation: "Entre as prerrogativas do defensor público está a intimação pessoal em todos os atos processuais."
-      },
-      // CONCURSOS - TRIBUNAIS
-      {
         text: "Compete privativamente ao Tribunal de Justiça:",
-        options: ["Julgar prefeitos", "Processar deputados estaduais", "Julgar mandado de segurança contra atos do governador", "Todas as alternativas"],
+        options: [
+          "Julgar prefeitos",
+          "Processar deputados estaduais", 
+          "Julgar mandado de segurança contra atos do governador",
+          "Todas as alternativas"
+        ],
         correctAnswerIndex: 3,
         difficulty: 3,
         category: "Direito Constitucional",
         challengeType: "CONCURSOS_TRIBUNAIS",
         explanation: "São competências privativas do TJ julgar prefeitos, deputados estaduais e mandados de segurança contra atos do governador."
-      },
-      // CONCURSOS - PROCURADORIAS
-      {
-        text: "A Advocacia Pública tem como função:",
-        options: ["Representar particulares", "Defender interesses do Estado", "Consultoria privada", "Mediação de conflitos"],
-        correctAnswerIndex: 1,
-        difficulty: 2,
-        category: "Direito Administrativo",
-        challengeType: "CONCURSOS_PROCURADORIAS",
-        explanation: "A Advocacia Pública representa e defende os interesses do Estado em juízo e fora dele."
-      },
-      // CONCURSOS - ENAM
-      {
-        text: "No processo administrativo federal, o contraditório:",
-        options: ["É dispensável", "Só se aplica em sanções", "É obrigatório sempre", "Depende da gravidade"],
-        correctAnswerIndex: 2,
-        difficulty: 2,
-        category: "Direito Administrativo",
-        challengeType: "CONCURSOS_ENAM",
-        explanation: "O contraditório é princípio obrigatório em todo processo administrativo federal."
-      },
-      // CONCURSOS - CNU
-      {
-        text: "O servidor público federal tem direito a:",
-        options: ["Licença-prêmio", "Estabilidade após 2 anos", "Irredutibilidade de vencimentos", "Todas as alternativas"],
-        correctAnswerIndex: 2,
-        difficulty: 2,
-        category: "Direito Administrativo",
-        challengeType: "CONCURSOS_CNU",
-        explanation: "A irredutibilidade de vencimentos é direito constitucional do servidor público."
       }
     ];
 
-    questionsData.forEach(q => {
-      const id = randomUUID();
-      this.questions.set(id, { id, ...q, createdAt: new Date() });
+    // Adicionar questões ao storage com IDs únicos
+    questionsData.forEach((questionData, index) => {
+      const id = `Q${String(index + 1).padStart(3, '0')}`;
+      const question: Question = {
+        id,
+        ...questionData,
+        createdAt: new Date()
+      };
+      this.questions.set(id, question);
     });
   }
 }

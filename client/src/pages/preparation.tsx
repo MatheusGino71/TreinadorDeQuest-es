@@ -31,7 +31,7 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
     {
       icon: <Target className="w-6 h-6 text-blue-500" />,
       title: "20 Questões",
-      description: "Responda questões de múltipla escolha sobre Processo Civil"
+      description: "Responda questões sobre todas as disciplinas da 1ª Fase"
     },
     {
       icon: <Heart className="w-6 h-6 text-red-500" />,
@@ -70,7 +70,7 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">GAME OAB</h1>
-                <p className="text-sm text-blue-200">Processo Civil</p>
+                <p className="text-sm text-blue-200">Estudo Jurídico Interativo</p>
               </div>
             </div>
 
