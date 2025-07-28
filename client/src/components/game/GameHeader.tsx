@@ -1,4 +1,5 @@
-import { Heart, Gamepad } from "lucide-react";
+import { Heart, Gamepad, LogOut, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface GameSession {
   id: string;
@@ -15,10 +16,12 @@ interface GameSession {
 
 interface GameHeaderProps {
   session: GameSession;
+  user: any;
   onPause: () => void;
+  onLogout: () => void;
 }
 
-export default function GameHeader({ session, onPause }: GameHeaderProps) {
+export default function GameHeader({ session, user, onPause, onLogout }: GameHeaderProps) {
   return (
     <header className="bg-game-surface shadow-lg border-b-2 border-game-blue">
       <div className="max-w-6xl mx-auto px-4 py-4">
@@ -34,6 +37,11 @@ export default function GameHeader({ session, onPause }: GameHeaderProps) {
           </div>
 
           <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2 bg-white/10 px-3 py-1 rounded-lg">
+              <User className="w-4 h-4 text-game-text-secondary" />
+              <span className="text-sm text-game-text">{user?.name}</span>
+            </div>
+            
             <div className="text-center">
               <div className="text-sm text-game-text-secondary">Pontuação</div>
               <div className="text-xl font-bold text-game-yellow">
@@ -59,6 +67,16 @@ export default function GameHeader({ session, onPause }: GameHeaderProps) {
                 ))}
               </div>
             </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLogout}
+              className="bg-white/10 border-white/20 text-game-text hover:bg-white/20"
+            >
+              <LogOut className="w-4 h-4 mr-1" />
+              Sair
+            </Button>
           </div>
         </div>
       </div>

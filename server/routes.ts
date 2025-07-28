@@ -1,9 +1,65 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { answerSchema, powerUpSchema } from "@shared/schema";
+import { answerSchema, powerUpSchema, insertUserSchema, loginUserSchema } from "@shared/schema";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // User registration
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email já está em uso" });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      
+      // Create user
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword,
+      });
+      
+      // Return user without password
+      const { password, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Erro ao criar conta" });
+    }
+  });
+
+  // User login
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = loginUserSchema.parse(req.body);
+      
+      // Find user
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Email ou senha incorretos" });
+      }
+      
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Email ou senha incorretos" });
+      }
+      
+      // Return user without password
+      const { password: _, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Erro ao fazer login" });
+    }
+  });
+
   // Start new game session
   app.post("/api/game/start", async (req, res) => {
     try {

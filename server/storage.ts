@@ -1,25 +1,60 @@
-import { type Question, type InsertQuestion, type GameSession, type InsertGameSession } from "@shared/schema";
+import { 
+  type Question, 
+  type InsertQuestion, 
+  type GameSession, 
+  type InsertGameSession,
+  type User,
+  type InsertUser
+} from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // Users
+  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
+  
   // Questions
   getRandomQuestions(count: number): Promise<Question[]>;
   getQuestionById(id: string): Promise<Question | undefined>;
   
   // Game Session
-  createGameSession(): Promise<GameSession>;
+  createGameSession(userId?: string): Promise<GameSession>;
   getGameSession(id: string): Promise<GameSession | undefined>;
   updateGameSession(id: string, updates: Partial<GameSession>): Promise<GameSession | undefined>;
 }
 
 export class MemStorage implements IStorage {
+  private users: Map<string, User>;
   private questions: Map<string, Question>;
   private gameSessions: Map<string, GameSession>;
 
   constructor() {
+    this.users = new Map();
     this.questions = new Map();
     this.gameSessions = new Map();
     this.initializeQuestions();
+  }
+
+  // User methods
+  async createUser(user: InsertUser): Promise<User> {
+    const id = randomUUID();
+    const newUser: User = {
+      id,
+      ...user,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    return this.users.get(id);
   }
 
   private initializeQuestions() {
@@ -202,10 +237,11 @@ export class MemStorage implements IStorage {
     return this.questions.get(id);
   }
 
-  async createGameSession(): Promise<GameSession> {
+  async createGameSession(userId?: string): Promise<GameSession> {
     const id = randomUUID();
     const session: GameSession = {
       id,
+      userId: userId || null,
       score: 0,
       level: 1,
       lives: 3,
@@ -215,6 +251,7 @@ export class MemStorage implements IStorage {
       questionNumber: 1,
       totalQuestions: 20,
       isGameOver: false,
+      createdAt: new Date(),
     };
     this.gameSessions.set(id, session);
     return session;

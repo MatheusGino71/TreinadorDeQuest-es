@@ -45,7 +45,12 @@ interface GameState {
   eliminatedOptions: number[];
 }
 
-export default function Game() {
+interface GameProps {
+  user: any;
+  onLogout: () => void;
+}
+
+export default function Game({ user, onLogout }: GameProps) {
   const { toast } = useToast();
   const [gameState, setGameState] = useState<GameState>({
     session: null,
@@ -294,7 +299,9 @@ export default function Game() {
     <div className="min-h-screen flex flex-col">
       <GameHeader
         session={gameState.session}
+        user={user}
         onPause={togglePause}
+        onLogout={onLogout}
       />
 
       <main className="flex-1 flex items-center justify-center p-4">

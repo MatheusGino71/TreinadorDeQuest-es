@@ -1,7 +1,17 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 20 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 export const questions = pgTable("questions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -15,6 +25,7 @@ export const questions = pgTable("questions", {
 
 export const gameSession = pgTable("game_session", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
   score: integer("score").notNull().default(0),
   level: integer("level").notNull().default(1),
   lives: integer("lives").notNull().default(3),
@@ -24,6 +35,23 @@ export const gameSession = pgTable("game_session", {
   questionNumber: integer("question_number").notNull().default(1),
   totalQuestions: integer("total_questions").notNull().default(20),
   isGameOver: boolean("is_game_over").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(15, "Telefone muito longo"),
+});
+
+export const loginUserSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 export const insertQuestionSchema = createInsertSchema(questions).omit({
@@ -32,8 +60,12 @@ export const insertQuestionSchema = createInsertSchema(questions).omit({
 
 export const insertGameSessionSchema = createInsertSchema(gameSession).omit({
   id: true,
+  createdAt: true,
 });
 
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;
+export type LoginUser = z.infer<typeof loginUserSchema>;
 export type InsertQuestion = z.infer<typeof insertQuestionSchema>;
 export type Question = typeof questions.$inferSelect;
 export type InsertGameSession = z.infer<typeof insertGameSessionSchema>;
