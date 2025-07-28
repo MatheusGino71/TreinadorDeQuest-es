@@ -20,12 +20,14 @@ export const questions = pgTable("questions", {
   correctAnswerIndex: integer("correct_answer_index").notNull(), // 0-3
   difficulty: integer("difficulty").notNull().default(1), // 1-5 stars
   category: text("category").notNull().default("Processo Civil"),
+  challengeType: text("challenge_type").notNull().default("OAB"), // "OAB" or "CONCURSOS"
   explanation: text("explanation"),
 });
 
 export const gameSession = pgTable("game_session", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
+  challengeType: text("challenge_type").notNull().default("OAB"), // "OAB" or "CONCURSOS"
   score: integer("score").notNull().default(0),
   level: integer("level").notNull().default(1),
   lives: integer("lives").notNull().default(3),
