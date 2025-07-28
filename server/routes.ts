@@ -115,7 +115,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const session = await storage.createGameSession(sessionData);
-      const questions = await storage.getRandomQuestions(totalQuestionsCount, challengeType);
+      // Retornar todas as questões disponíveis para o frontend gerenciar aleatoriamente
+      const questions = await storage.getQuestions(challengeType);
       
       res.json({
         session,
@@ -176,14 +177,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      const newLives = isCorrect ? session.lives : Math.max(0, session.lives - 1);
+      const isGameOver = !isCorrect && newLives <= 0; // Game over apenas quando vidas acabam
+      
       const updatedSession = await storage.updateGameSession(sessionId, {
         score: session.score + scoreIncrease,
         correctAnswers: session.correctAnswers + (isCorrect ? 1 : 0),
         incorrectAnswers: session.incorrectAnswers + (isCorrect ? 0 : 1),
         currentStreak: isCorrect ? session.currentStreak + 1 : 0,
-        lives: isCorrect ? session.lives : Math.max(0, session.lives - 1), // Sistema de vidas restaurado
+        lives: newLives,
         questionNumber: session.questionNumber + 1,
-        isGameOver: session.questionNumber >= session.totalQuestions || (!isCorrect && session.lives - 1 <= 0), // Game over por questões ou vidas
+        isGameOver: isGameOver
       });
 
       // Save user answer to database for tracking
@@ -194,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             sessionId: session.id,
             questionId: question.id,
             userAnswerIndex: answerIndex,
-            correctAnswerIndex: question.correctAnswerIndex,
+            correctAnswerIndex: question.correctAnswerIndex || 0, // Default to 0 if null
             isCorrect: isCorrect,
             timeSpent: 60 - (timeRemaining || 0), // Calculate time spent
             challengeType: session.challengeType,

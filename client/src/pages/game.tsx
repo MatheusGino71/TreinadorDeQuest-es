@@ -37,6 +37,7 @@ interface GameSession {
 interface GameState {
   session: GameSession | null;
   questions: Question[];
+  randomizedQuestions: Question[]; // Array com ordem aleatória das questões
   currentQuestionIndex: number;
   timeRemaining: number;
   isPaused: boolean;
@@ -56,6 +57,7 @@ export default function Game({ user, onLogout }: GameProps) {
   const [gameState, setGameState] = useState<GameState>({
     session: null,
     questions: [],
+    randomizedQuestions: [],
     currentQuestionIndex: 0,
     timeRemaining: 60, // Aumentado para 1 minuto
     isPaused: false,
@@ -64,6 +66,16 @@ export default function Game({ user, onLogout }: GameProps) {
     usedPowerUps: {},
     eliminatedOptions: [],
   });
+
+  // Função para embaralhar array (Fisher-Yates shuffle)
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   // Start game mutation
   const startGameMutation = useMutation({
@@ -76,10 +88,12 @@ export default function Game({ user, onLogout }: GameProps) {
       return response.json();
     },
     onSuccess: (data) => {
+      const randomizedQuestions = shuffleArray(data.questions);
       setGameState(prev => ({
         ...prev,
         session: data.session,
         questions: data.questions,
+        randomizedQuestions: randomizedQuestions,
         currentQuestionIndex: 0,
         timeRemaining: 60,
         isGameOver: false,
@@ -114,13 +128,27 @@ export default function Game({ user, onLogout }: GameProps) {
       return response.json();
     },
     onSuccess: (data) => {
-      setGameState(prev => ({
-        ...prev,
-        session: data.session,
-        currentQuestionIndex: prev.currentQuestionIndex + 1,
-        timeRemaining: 60,
-        eliminatedOptions: [], // Reset eliminated options for next question
-      }));
+      if (data.session.isGameOver) {
+        // Game over - embaralhar questões novamente e resetar para continuar jogando
+        const randomizedQuestions = shuffleArray(gameState.questions);
+        setGameState(prev => ({
+          ...prev,
+          session: { ...data.session, lives: 3, isGameOver: false }, // Reset vidas
+          randomizedQuestions: randomizedQuestions,
+          currentQuestionIndex: 0,
+          timeRemaining: 60,
+          eliminatedOptions: [],
+          showGameOver: true, // Mostrar modal de game over primeiro
+        }));
+      } else {
+        setGameState(prev => ({
+          ...prev,
+          session: data.session,
+          currentQuestionIndex: prev.currentQuestionIndex + 1,
+          timeRemaining: 60,
+          eliminatedOptions: [], // Reset eliminated options for next question
+        }));
+      }
 
       // Show feedback
       toast({
@@ -241,7 +269,7 @@ export default function Game({ user, onLogout }: GameProps) {
   const handlePowerUp = useCallback((type: string) => {
     if (gameState.usedPowerUps[type]) return;
 
-    const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+    const currentQuestion = gameState.randomizedQuestions[gameState.currentQuestionIndex];
     usePowerUpMutation.mutate({
       type,
       questionId: currentQuestion?.id,
@@ -282,7 +310,7 @@ export default function Game({ user, onLogout }: GameProps) {
     );
   }
 
-  if (!gameState.session || !gameState.questions || gameState.questions.length === 0) {
+  if (!gameState.session || !gameState.randomizedQuestions || gameState.randomizedQuestions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -298,8 +326,8 @@ export default function Game({ user, onLogout }: GameProps) {
     );
   }
 
-  const currentQuestion = gameState.questions?.[gameState.currentQuestionIndex];
-  const progress = gameState.questions ? (gameState.currentQuestionIndex / gameState.questions.length) * 100 : 0;
+  const currentQuestion = gameState.randomizedQuestions?.[gameState.currentQuestionIndex];
+  const progress = gameState.randomizedQuestions ? (gameState.currentQuestionIndex / gameState.randomizedQuestions.length) * 100 : 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -317,7 +345,7 @@ export default function Game({ user, onLogout }: GameProps) {
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-game-text-secondary">Progresso da Sessão</span>
               <span className="text-sm text-game-text-secondary">
-                Questão {gameState.currentQuestionIndex + 1} de {gameState.questions.length}
+                Questão {gameState.currentQuestionIndex + 1} de {gameState.randomizedQuestions.length}
               </span>
             </div>
             <div className="w-full bg-game-surface rounded-full h-3 shadow-inner">
@@ -369,12 +397,12 @@ export default function Game({ user, onLogout }: GameProps) {
           </div>
 
           <div className="text-sm text-game-text-secondary">
-            © 2024 Game OAB - Estudos Jurídicos Gamificados
+            © 2024 Treinador de Questões - Powered by BIPETech
           </div>
 
           <div className="flex space-x-4">
             <button
-              onClick={restartGame}
+              onClick={() => startGameMutation.mutate()}
               className="text-game-text-secondary hover:text-game-text transition-colors"
             >
               <i className="fas fa-redo mr-2"></i> Reiniciar
@@ -386,14 +414,14 @@ export default function Game({ user, onLogout }: GameProps) {
       <GameOverModal
         show={gameState.showGameOver}
         session={gameState.session}
-        onPlayAgain={restartGame}
+        onPlayAgain={() => setGameState(prev => ({ ...prev, showGameOver: false }))}
         onClose={() => setGameState(prev => ({ ...prev, showGameOver: false }))}
       />
 
       <PauseModal
         show={gameState.isPaused}
         onResume={togglePause}
-        onRestart={restartGame}
+        onRestart={() => startGameMutation.mutate()}
         onClose={() => setGameState(prev => ({ ...prev, isPaused: false }))}
       />
     </div>
