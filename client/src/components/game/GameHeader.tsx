@@ -1,4 +1,4 @@
-import { Heart, Gamepad, LogOut, User } from "lucide-react";
+import { Gamepad, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface GameSession {
@@ -51,21 +51,6 @@ export default function GameHeader({ session, user, onPause, onLogout }: GameHea
             <div className="text-center">
               <div className="text-sm text-game-text-secondary">Nível</div>
               <div className="text-xl font-bold text-game-blue">{session.level}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-game-text-secondary">Vidas</div>
-              <div className="flex space-x-1">
-                {Array(3).fill(0).map((_, i) => (
-                  <Heart
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < session.lives 
-                        ? 'text-game-red fill-current' 
-                        : 'text-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
             
             <Button

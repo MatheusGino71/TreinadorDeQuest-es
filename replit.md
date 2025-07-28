@@ -117,3 +117,5 @@ Preferred communication style: Simple, everyday language.
 - **Conteúdo Autêntico**: Todas as questões mantêm texto original, opções, respostas corretas e explicações do Excel
 - **Filtragem Funcional**: Sistema filtra corretamente por OAB_1_FASE (44) e CONCURSOS_MPSP (6)
 - **Correção de Import**: Resolvido problema de carregamento TypeScript/JavaScript das questões
+- **Sistema de Vidas Removido**: Jogo agora permite responder todas as questões sem limitação de erros
+- **Tempo Aumentado**: Tempo por questão alterado de 20 segundos para 1 minuto (60 segundos)

@@ -57,7 +57,7 @@ export default function Game({ user, onLogout }: GameProps) {
     session: null,
     questions: [],
     currentQuestionIndex: 0,
-    timeRemaining: 20,
+    timeRemaining: 60, // Aumentado para 1 minuto
     isPaused: false,
     isGameOver: false,
     showGameOver: false,
@@ -81,7 +81,7 @@ export default function Game({ user, onLogout }: GameProps) {
         session: data.session,
         questions: data.questions,
         currentQuestionIndex: 0,
-        timeRemaining: 20,
+        timeRemaining: 60,
         isGameOver: false,
         showGameOver: false,
         usedPowerUps: {},
@@ -118,7 +118,7 @@ export default function Game({ user, onLogout }: GameProps) {
         ...prev,
         session: data.session,
         currentQuestionIndex: prev.currentQuestionIndex + 1,
-        timeRemaining: 20,
+        timeRemaining: 60,
         eliminatedOptions: [], // Reset eliminated options for next question
       }));
 

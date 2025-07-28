@@ -78,13 +78,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const availableQuestions = await storage.getQuestions(challengeType);
       const totalQuestionsCount = availableQuestions.length;
       
-      // Create game session with dynamic question count
+      // Create game session with dynamic question count (sem sistema de vidas)
       const sessionData: InsertGameSession = {
         userId: userId || 1, // Default user ID if not provided
         challengeType,
         score: 0,
         level: 1,
-        lives: 3,
+        lives: 999, // Sistema de vidas removido - infinitas
         correctAnswers: 0,
         incorrectAnswers: 0,
         currentStreak: 0,
@@ -160,9 +160,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         correctAnswers: session.correctAnswers + (isCorrect ? 1 : 0),
         incorrectAnswers: session.incorrectAnswers + (isCorrect ? 0 : 1),
         currentStreak: isCorrect ? session.currentStreak + 1 : 0,
-        lives: isCorrect ? session.lives : Math.max(0, session.lives - 1),
+        lives: 999, // Sistema de vidas removido - sempre infinitas
         questionNumber: session.questionNumber + 1,
-        isGameOver: session.lives <= 1 && !isCorrect || session.questionNumber >= session.totalQuestions,
+        isGameOver: session.questionNumber >= session.totalQuestions, // Game over apenas quando acabam as questões
       });
 
       res.json({

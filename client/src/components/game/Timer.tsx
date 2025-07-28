@@ -5,7 +5,7 @@ interface TimerProps {
 export default function Timer({ timeRemaining }: TimerProps) {
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (timeRemaining / 20) * circumference;
+  const strokeDashoffset = circumference - (timeRemaining / 60) * circumference;
 
   return (
     <div className="flex justify-center mb-6">
