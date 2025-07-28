@@ -63,12 +63,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new game session
   app.post("/api/game/start", async (req, res) => {
     try {
-      const session = await storage.createGameSession();
-      const questions = await storage.getRandomQuestions(20);
+      const { userId, challengeType = "OAB" } = req.body;
+      const session = await storage.createGameSession(userId, challengeType);
+      const questions = await storage.getRandomQuestions(20, challengeType);
       
       res.json({
         session,
-        questions: questions.map(q => ({ id: q.id, text: q.text, options: q.options, difficulty: q.difficulty, category: q.category })),
+        questions: questions.map(q => ({ id: q.id, text: q.text, options: q.options, difficulty: q.difficulty, category: q.category, challengeType: q.challengeType })),
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to start game session" });

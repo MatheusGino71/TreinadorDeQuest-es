@@ -41,7 +41,9 @@ function Router() {
     setGameState('preparation'); // Reset game state
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = (challengeType: string) => {
+    // Store challenge type for the game session
+    localStorage.setItem('game-challenge-type', challengeType);
     setGameState('playing');
   };
 

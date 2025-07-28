@@ -67,8 +67,12 @@ export default function Game({ user, onLogout }: GameProps) {
   // Start game mutation
   const startGameMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/game/start");
-      return response.json();
+      const challengeType = localStorage.getItem('game-challenge-type') || 'OAB';
+      const response = await apiRequest("POST", "/api/game/start", {
+        userId: user?.id,
+        challengeType
+      });
+      return response;
     },
     onSuccess: (data) => {
       setGameState(prev => ({

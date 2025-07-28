@@ -39,13 +39,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Preparation Screen
 - **Game Instructions**: Interactive tutorial with rules and controls
+- **Challenge Type Selection**: Choose between OAB (Processo Civil) or CONCURSOS (Direito Administrativo/Constitucional)
 - **Power-up Explanations**: Detailed descriptions of available power-ups
 - **Keyboard Controls Guide**: Complete list of game shortcuts
 - **Visual Statistics**: Preview of game parameters (questions, lives, time limits)
 
 ### Game Engine
-- **Game Session Management**: Tracks player progress, score, lives, and streaks
-- **Question System**: Handles multiple-choice questions (4 options) with difficulty ratings and categories
+- **Game Session Management**: Tracks player progress, score, lives, streaks, and challenge type
+- **Question System**: Handles multiple-choice questions (4 options) with difficulty ratings, categories, and challenge types (OAB/CONCURSOS)
+- **Content Filtering**: Questions are filtered by selected challenge type (OAB or CONCURSOS)
 - **Power-ups**: Three types - 50/50 (eliminates 2 wrong options), extra time, and skip question
 - **Timer System**: 20-second countdown per question with visual indicator
 

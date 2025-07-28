@@ -65,6 +65,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "Conforme o CPC, o prazo para contestação é de 15 dias úteis contados da citação."
       },
       {
@@ -73,6 +74,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "A revelia não implica automaticamente na procedência do pedido, apenas presume-se verdadeiros os fatos alegados pelo autor."
       },
       {
@@ -81,6 +83,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 2,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "O prazo para apelação é de 15 dias úteis contados da intimação da decisão."
       },
       {
@@ -89,6 +92,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "A citação por edital é medida excepcional, só sendo admitida após esgotadas as tentativas de localização do réu."
       },
       {
@@ -97,6 +101,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "A tutela de urgência pode ser concedida liminarmente quando presentes os requisitos legais."
       },
       {
@@ -105,6 +110,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "O prazo para tríplica segue o mesmo prazo da contestação: 15 dias úteis."
       },
       {
@@ -113,6 +119,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 2,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "Títulos executivos extrajudiciais permitem execução direta, sem necessidade de processo de conhecimento prévio."
       },
       {
@@ -121,6 +128,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 4,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "O indeferimento da petição inicial ocorre antes da citação do réu, não após o contraditório."
       },
       {
@@ -129,6 +137,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 1,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "A competência relativa (territorial) pode ser modificada por acordo entre as partes ou por não alegação de incompetência."
       },
       {
@@ -137,6 +146,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 4,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "Apenas as sentenças de mérito fazem coisa julgada material. Decisões interlocutórias fazem preclusão."
       },
       {
@@ -145,6 +155,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "O litisconsórcio necessário pode ocorrer tanto no polo ativo quanto no passivo da relação processual."
       },
       {
@@ -153,6 +164,7 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 3,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "A perícia é facultativa e depende da necessidade de esclarecimento de fatos que dependam de conhecimento técnico."
       },
       {
@@ -161,63 +173,81 @@ export class MemStorage implements IStorage {
         correctAnswerIndex: 2,
         difficulty: 2,
         category: "Processo Civil",
+        challengeType: "OAB",
         explanation: "O prazo para agravo de instrumento é de 15 dias úteis contados da intimação da decisão."
       },
+      // Questões para CONCURSOS
       {
-        text: "A audiência de mediação/conciliação é:",
-        options: ["Sempre facultativa", "Obrigatória com participação obrigatória", "Obrigatória mas participação facultativa", "Apenas para casos complexos"],
+        text: "Na organização dos tribunais, compete ao CNJ:",
+        options: ["Julgar recursos extraordinários", "Controlar administrativamente os tribunais", "Legislar sobre direito processual", "Nomear desembargadores"],
+        correctAnswerIndex: 1,
+        difficulty: 3,
+        category: "Direito Constitucional",
+        challengeType: "CONCURSOS",
+        explanation: "O CNJ exerce controle administrativo e financeiro do Poder Judiciário."
+      },
+      {
+        text: "Sobre os princípios da Administração Pública:",
+        options: ["São apenas orientadores", "Têm força normativa obrigatória", "Aplicam-se só à União", "São facultativos"],
+        correctAnswerIndex: 1,
+        difficulty: 2,
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "Os princípios da Administração Pública têm força normativa e são de observância obrigatória."
+      },
+      {
+        text: "O regime jurídico-administrativo caracteriza-se por:",
+        options: ["Igualdade com particulares", "Prerrogativas e sujeições", "Liberdade contratual", "Autonomia privada"],
+        correctAnswerIndex: 1,
+        difficulty: 3,
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "O regime jurídico-administrativo confere prerrogativas de poder público e impõe sujeições especiais."
+      },
+      {
+        text: "A licitação é obrigatória para:",
+        options: ["Todas as contratações públicas", "Apenas obras acima de R$ 1 milhão", "Contratos que excedam limites legais", "Somente compras de bens"],
         correctAnswerIndex: 2,
         difficulty: 2,
-        category: "Processo Civil",
-        explanation: "A audiência de mediação/conciliação é obrigatória, mas a participação efetiva das partes é facultativa."
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "A licitação é obrigatória quando os valores excedem os limites estabelecidos em lei."
       },
       {
-        text: "Qual o prazo para embargos de declaração?",
-        options: ["3 dias", "5 dias", "10 dias", "15 dias"],
-        correctAnswerIndex: 1,
-        difficulty: 2,
-        category: "Processo Civil",
-        explanation: "Os embargos de declaração devem ser opostos no prazo de 5 dias úteis."
-      },
-      {
-        text: "A emenda da petição inicial:",
-        options: ["Pode ser feita quantas vezes necessário", "É permitida apenas uma vez", "Depende de justificativa especial após primeira oportunidade", "É vedada pelo CPC"],
+        text: "O ato administrativo discricionário:",
+        options: ["Não pode ser controlado", "Pode ter mérito controlado", "Tem controle limitado à legalidade", "É imune ao controle judicial"],
         correctAnswerIndex: 2,
-        difficulty: 3,
-        category: "Processo Civil",
-        explanation: "O juiz deve dar oportunidade para emendar a inicial uma vez. Novas emendas dependem de justificativa especial."
-      },
-      {
-        text: "Quando verificada a conexão entre processos:",
-        options: ["A reunião é facultativa", "A reunião é obrigatória", "Depende do juiz", "Só ocorre se as partes concordarem"],
-        correctAnswerIndex: 1,
-        difficulty: 3,
-        category: "Processo Civil",
-        explanation: "Verificada a conexão, a reunião dos processos é obrigatória para evitar decisões conflitantes."
-      },
-      {
-        text: "A reconvenção deve ser apresentada:",
-        options: ["A qualquer tempo", "Junto com a contestação", "Após a tríplica", "Apenas na sentença"],
-        correctAnswerIndex: 1,
-        difficulty: 3,
-        category: "Processo Civil",
-        explanation: "A reconvenção deve ser apresentada junto com a contestação, no prazo de resposta."
-      },
-      {
-        text: "A tutela inibitória tem por objetivo:",
-        options: ["Reparar dano já ocorrido", "Impedir prática de ato ilícito", "Executar decisão judicial", "Anular ato processual"],
-        correctAnswerIndex: 1,
         difficulty: 4,
-        category: "Processo Civil",
-        explanation: "A tutela inibitória tem caráter preventivo, visando impedir a ocorrência ou repetição de ilícito."
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "O controle judicial do ato discricionário limita-se aos aspectos de legalidade, não adentrando o mérito administrativo."
       },
       {
-        text: "No processo eletrônico, a procuração:",
-        options: ["É dispensada", "Deve ser juntada em formato digital", "Só é aceita em papel", "Não tem validade"],
+        text: "Servidor público estável pode perder o cargo por:",
+        options: ["Avaliação de desempenho negativa apenas", "Processo administrativo ou judicial", "Decisão unilateral da chefia", "Mudança de governo"],
+        correctAnswerIndex: 1,
+        difficulty: 3,
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "A perda do cargo pelo servidor estável exige processo administrativo ou judicial com garantia de ampla defesa."
+      },
+      {
+        text: "A responsabilidade civil do Estado é:",
+        options: ["Sempre subjetiva", "Objetiva para danos causados por agentes", "Apenas por dolo", "Subsidiária"],
         correctAnswerIndex: 1,
         difficulty: 2,
-        category: "Processo Civil",
-        explanation: "Mesmo no processo eletrônico, a procuração deve ser juntada, podendo ser em formato digital."
+        category: "Direito Administrativo",
+        challengeType: "CONCURSOS",
+        explanation: "A Constituição estabelece responsabilidade objetiva do Estado por danos causados por seus agentes."
+      },
+      {
+        text: "A Constituição pode ser alterada por:",
+        options: ["Lei ordinária", "Emenda constitucional", "Decreto legislativo", "Medida provisória"],
+        correctAnswerIndex: 1,
+        difficulty: 1,
+        category: "Direito Constitucional",
+        challengeType: "CONCURSOS",
+        explanation: "A Constituição só pode ser alterada por emenda constitucional, seguindo procedimento específico."
       }
     ];
 
@@ -227,8 +257,14 @@ export class MemStorage implements IStorage {
     });
   }
 
-  async getRandomQuestions(count: number): Promise<Question[]> {
-    const allQuestions = Array.from(this.questions.values());
+  async getRandomQuestions(count: number, challengeType?: string): Promise<Question[]> {
+    let allQuestions = Array.from(this.questions.values());
+    
+    // Filter by challenge type if provided
+    if (challengeType) {
+      allQuestions = allQuestions.filter(q => q.challengeType === challengeType);
+    }
+    
     const shuffled = allQuestions.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
@@ -237,11 +273,12 @@ export class MemStorage implements IStorage {
     return this.questions.get(id);
   }
 
-  async createGameSession(userId?: string): Promise<GameSession> {
+  async createGameSession(userId?: string, challengeType: string = "OAB"): Promise<GameSession> {
     const id = randomUUID();
     const session: GameSession = {
       id,
       userId: userId || null,
+      challengeType,
       score: 0,
       level: 1,
       lives: 3,
