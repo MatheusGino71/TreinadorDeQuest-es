@@ -121,3 +121,5 @@ Preferred communication style: Simple, everyday language.
 - **Tempo Aumentado**: Tempo por questão alterado de 20 segundos para 1 minuto (60 segundos)
 - **Migração para PostgreSQL**: Todas as 50 questões do Excel agora salvas no banco de dados
 - **Storage Atualizado**: Sistema agora usa DatabaseStorage em vez de MemStorage para carregamento das questões
+- **Expansão Massiva**: 14.333 questões extraídas do novo Excel e 531 questões diversificadas migradas
+- **Categorias Ampliadas**: 9 categorias jurídicas diferentes com 450 questões OAB + 81 questões CONCURSOS

@@ -154,25 +154,51 @@ export class DatabaseStorage implements IStorage {
 
   // Question operations - using PostgreSQL data
   async getQuestions(challengeType?: string): Promise<Question[]> {
+    let results;
     if (!challengeType) {
-      return await db.select().from(questions);
+      results = await db.select().from(questions);
+    } else {
+      results = await db.select().from(questions).where(eq(questions.challengeType, challengeType));
     }
-    return await db.select().from(questions).where(eq(questions.challengeType, challengeType));
+    
+    // Mapear snake_case do DB para camelCase esperado pelo frontend
+    return results.map(q => {
+      const mapped = { ...q } as any;
+      mapped.correctAnswerIndex = mapped.correct_answer_index;
+      delete mapped.correct_answer_index;
+      return mapped;
+    });
   }
 
   async getRandomQuestions(count: number, challengeType?: string): Promise<Question[]> {
+    let results;
     if (!challengeType) {
-      return await db.select().from(questions).orderBy(sql`RANDOM()`).limit(count);
+      results = await db.select().from(questions).orderBy(sql`RANDOM()`).limit(count);
+    } else {
+      results = await db.select().from(questions)
+        .where(eq(questions.challengeType, challengeType))
+        .orderBy(sql`RANDOM()`)
+        .limit(count);
     }
-    return await db.select().from(questions)
-      .where(eq(questions.challengeType, challengeType))
-      .orderBy(sql`RANDOM()`)
-      .limit(count);
+    
+    // Mapear snake_case do DB para camelCase esperado pelo frontend
+    return results.map(q => {
+      const mapped = { ...q } as any;
+      mapped.correctAnswerIndex = mapped.correct_answer_index;
+      delete mapped.correct_answer_index;
+      return mapped;
+    });
   }
 
   async getQuestionById(id: string): Promise<Question | undefined> {
     const [question] = await db.select().from(questions).where(eq(questions.id, id));
-    return question || undefined;
+    if (!question) return undefined;
+    
+    // Mapear snake_case do DB para camelCase esperado pelo frontend
+    const mapped = { ...question } as any;
+    mapped.correctAnswerIndex = mapped.correct_answer_index;
+    delete mapped.correct_answer_index;
+    return mapped;
   }
 
   // Game session operations
