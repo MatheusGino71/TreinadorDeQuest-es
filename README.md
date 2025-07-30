@@ -77,35 +77,55 @@ Um sistema gamificado de treinamento para questões jurídicas, focado na prepar
 
 ## 🚀 Como Executar
 
-### Pré-requisitos
-- Node.js 18+
-- PostgreSQL
-- Variáveis de ambiente configuradas
-
-### Instalação
+### Instalação Rápida
 ```bash
-# Clone o repositório
+# 1. Clone o repositório
 git clone https://github.com/MatheusGino71/TreinadorDeQuestoes.git
+cd TreinadorDeQuestoes
 
-# Instale as dependências
+# 2. Instale as dependências
 npm install
 
-# Configure o banco de dados
+# 3. Configure o arquivo .env (veja exemplo abaixo)
+cp .env.example .env
+
+# 4. Configure o banco de dados
 npm run db:push
 
-# Execute em desenvolvimento
+# 5. Execute em desenvolvimento
 npm run dev
 ```
 
-### Variáveis de Ambiente
+**Acesse**: http://localhost:5000
+
+### 📋 Pré-requisitos
+- **Node.js 18+** ([Download aqui](https://nodejs.org))
+- **PostgreSQL** (local ou na nuvem)
+- **Arquivo .env** configurado
+
+### 🔧 Configuração .env
 ```env
-DATABASE_URL=sua_url_postgresql
-PGHOST=host_do_banco
+# Banco PostgreSQL (obrigatório)
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/treinador_questoes
+
+# Configurações específicas
+PGHOST=localhost
 PGPORT=5432
-PGUSER=usuario
-PGPASSWORD=senha
-PGDATABASE=nome_do_banco
+PGUSER=seu_usuario
+PGPASSWORD=sua_senha
+PGDATABASE=treinador_questoes
+
+# Chave para sessões (opcional)
+SESSION_SECRET=sua_chave_secreta_aqui
 ```
+
+### 🌐 Opções de Banco na Nuvem
+- **[Neon.tech](https://neon.tech)** (grátis, recomendado)
+- **[Supabase](https://supabase.com)** (grátis)
+- **[Railway](https://railway.app)** (grátis)
+
+### 📖 Guia Completo
+Para instruções detalhadas, veja: **[SETUP_LOCAL.md](./SETUP_LOCAL.md)**
 
 ## 📱 Funcionalidades da Interface
 
