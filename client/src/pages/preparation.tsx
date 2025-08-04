@@ -96,15 +96,28 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
                 <span className="text-white font-medium">{user?.name}</span>
               </div>
               
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onLogout}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <LogOut className="w-4 h-4 mr-1" />
-                Sair
-              </Button>
+              <div className="flex items-center gap-2">
+                {user.role === 'admin' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = '/admin'}
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  >
+                    <User className="w-4 h-4 mr-1" />
+                    Admin
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onLogout}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Sair
+                </Button>
+              </div>
             </div>
           </div>
         </div>

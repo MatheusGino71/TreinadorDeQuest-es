@@ -60,6 +60,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Email ou senha incorretos" });
       }
       
+      // Update last login
+      await storage.updateUserLastLogin(user.id);
+      
       // Return user without password
       const { password: _, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword });
@@ -328,6 +331,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting session answers:", error);
       res.status(500).json({ message: "Failed to get session answers" });
+    }
+  });
+
+  // Middleware para verificar se é admin
+  const isAdmin = async (req: any, res: any, next: any) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "Token de acesso necessário" });
+      }
+
+      // Por simplificação, vamos usar o email no header por enquanto
+      // Em produção, usar JWT tokens
+      const email = authHeader.replace('Bearer ', '');
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Acesso negado - Admin necessário" });
+      }
+      
+      req.user = user;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Token inválido" });
+    }
+  };
+
+  // ADMIN ROUTES
+  
+  // Estatísticas administrativas
+  app.get("/api/admin/stats", isAdmin, async (req, res) => {
+    try {
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting admin stats:", error);
+      res.status(500).json({ message: "Erro ao buscar estatísticas" });
+    }
+  });
+
+  // Listar todos os usuários
+  app.get("/api/admin/users", isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error getting users:", error);
+      res.status(500).json({ message: "Erro ao buscar usuários" });
+    }
+  });
+
+  // Atualizar usuário
+  app.patch("/api/admin/users/:id", isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { role, isActive } = req.body;
+      
+      const updatedUser = await storage.updateUser(id, { role, isActive });
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Erro ao atualizar usuário" });
+    }
+  });
+
+  // Deletar usuário
+  app.delete("/api/admin/users/:id", isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteUser(id);
+      res.json({ message: "Usuário removido com sucesso" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Erro ao remover usuário" });
+    }
+  });
+
+  // Sessões recentes
+  app.get("/api/admin/sessions/recent", isAdmin, async (req, res) => {
+    try {
+      const sessions = await storage.getRecentSessions();
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error getting recent sessions:", error);
+      res.status(500).json({ message: "Erro ao buscar sessões" });
+    }
+  });
+
+  // Criar usuário admin (endpoint temporário para criar primeiro admin)
+  app.post("/api/admin/create-admin", async (req, res) => {
+    try {
+      const { email, password, name, phone } = req.body;
+      
+      // Verificar se já existe admin
+      const existingAdmin = await storage.getUserByEmail(email);
+      if (existingAdmin) {
+        return res.status(400).json({ message: "Admin já existe" });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create admin user
+      const adminUser = await storage.createUser({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role: 'admin'
+      });
+      
+      const { password: _, ...userWithoutPassword } = adminUser;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Error creating admin:", error);
+      res.status(500).json({ message: "Erro ao criar admin" });
     }
   });
 

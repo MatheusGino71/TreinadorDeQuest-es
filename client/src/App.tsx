@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Game from "@/pages/game";
 import LoginSimple from "@/pages/login-simple";
 import Preparation from "@/pages/preparation";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 import { type User } from "@shared/schema";
 
@@ -63,6 +64,12 @@ function Router() {
     return <LoginSimple onLoginSuccess={handleLoginSuccess} />;
   }
 
+  // Check if user is admin and on admin route
+  const isAdminRoute = window.location.pathname === '/admin';
+  if (user.role === 'admin' && isAdminRoute) {
+    return <AdminDashboard />;
+  }
+
   if (gameState === 'preparation') {
     return (
       <Preparation 
@@ -76,6 +83,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={() => <Game user={user} onLogout={handleReturnToPreparation} />} />
+      <Route path="/admin" component={() => user.role === 'admin' ? <AdminDashboard /> : <NotFound />} />
       <Route component={NotFound} />
     </Switch>
   );

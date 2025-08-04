@@ -199,16 +199,138 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const hashedPassword = await bcrypt.hash(insertUser.password, 10);
+  async createUser(insertUser: InsertUser & { role?: string }): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values({
-        ...insertUser,
-        password: hashedPassword,
-      })
+      .values(insertUser)
       .returning();
     return user;
+  }
+
+  async updateUserLastLogin(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const allUsers = await db.select().from(users).orderBy(users.createdAt);
+    return allUsers.map(user => ({
+      ...user,
+      password: undefined // Remove password from response
+    })) as User[];
+  }
+
+  async updateUser(userId: string, updates: Partial<User>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  async getAdminStats(): Promise<any> {
+    try {
+      // Total users
+      const totalUsers = await db.select({ count: sql`count(*)` }).from(users);
+      
+      // Active users (logged in last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const activeUsers = await db
+        .select({ count: sql`count(*)` })
+        .from(users)
+        .where(sql`${users.lastLoginAt} > ${thirtyDaysAgo}`);
+
+      // Total questions
+      const totalQuestions = await db.select({ count: sql`count(*)` }).from(questions);
+      
+      // Questions by type
+      const questionsOAB = await db
+        .select({ count: sql`count(*)` })
+        .from(questions)
+        .where(eq(questions.challengeType, 'OAB_1_FASE'));
+        
+      const questionsConcursos = await db
+        .select({ count: sql`count(*)` })
+        .from(questions)
+        .where(eq(questions.challengeType, 'CONCURSOS_MPSP'));
+
+      // Total sessions
+      const totalSessions = await db.select({ count: sql`count(*)` }).from(gameSession);
+      
+      // Average session score
+      const avgScore = await db
+        .select({ avg: sql`avg(${gameSession.score})` })
+        .from(gameSession);
+
+      // Top categories
+      const topCategories = await db
+        .select({
+          category: questions.category,
+          count: sql`count(*)`
+        })
+        .from(questions)
+        .groupBy(questions.category)
+        .orderBy(sql`count(*) desc`)
+        .limit(5);
+
+      return {
+        totalUsers: Number(totalUsers[0]?.count || 0),
+        activeUsers: Number(activeUsers[0]?.count || 0),
+        totalQuestions: Number(totalQuestions[0]?.count || 0),
+        questionsOAB: Number(questionsOAB[0]?.count || 0),
+        questionsConcursos: Number(questionsConcursos[0]?.count || 0),
+        totalSessions: Number(totalSessions[0]?.count || 0),
+        avgSessionScore: Math.round(Number(avgScore[0]?.avg || 0)),
+        topCategories: topCategories.map(cat => ({
+          category: cat.category,
+          count: Number(cat.count)
+        }))
+      };
+    } catch (error) {
+      console.error('Error getting admin stats:', error);
+      return {
+        totalUsers: 0,
+        activeUsers: 0,
+        totalQuestions: 0,
+        questionsOAB: 0,
+        questionsConcursos: 0,
+        totalSessions: 0,
+        avgSessionScore: 0,
+        topCategories: []
+      };
+    }
+  }
+
+  async getRecentSessions(): Promise<any[]> {
+    try {
+      const sessions = await db
+        .select({
+          id: gameSession.id,
+          userId: gameSession.userId,
+          challengeType: gameSession.challengeType,
+          score: gameSession.score,
+          isGameOver: gameSession.isGameOver,
+          createdAt: gameSession.createdAt,
+          userName: users.name
+        })
+        .from(gameSession)
+        .leftJoin(users, eq(gameSession.userId, users.id))
+        .orderBy(sql`${gameSession.createdAt} desc`)
+        .limit(20);
+
+      return sessions;
+    } catch (error) {
+      console.error('Error getting recent sessions:', error);
+      return [];
+    }
   }
 
   // Question operations - using PostgreSQL data
