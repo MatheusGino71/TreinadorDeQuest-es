@@ -132,9 +132,10 @@ export class MemStorage implements IStorage {
       const results = await db
         .selectDistinct({ category: questions.category })
         .from(questions)
+        .where(sql`${questions.category} IS NOT NULL`)
         .orderBy(questions.category);
       
-      return results.map(r => r.category);
+      return results.map(r => r.category).filter(Boolean);
     } catch (error) {
       console.error('Error getting categories:', error);
       return [];
@@ -147,15 +148,18 @@ export class MemStorage implements IStorage {
         .select({
           category: questions.category,
           challengeType: questions.challengeType,
-          count: sql`count(*)`
+          count: sql<number>`count(*)`
         })
         .from(questions)
+        .where(sql`${questions.category} IS NOT NULL`)
         .groupBy(questions.category, questions.challengeType)
         .orderBy(questions.category);
 
       const result: Record<string, { total: number; oab: number; concursos: number }> = {};
 
       categoryCounts.forEach(item => {
+        if (!item.category) return;
+        
         if (!result[item.category]) {
           result[item.category] = { total: 0, oab: 0, concursos: 0 };
         }
