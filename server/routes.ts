@@ -96,7 +96,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all categories available
   app.get("/api/questions/categories", async (req, res) => {
     try {
-      const categories = await storage.getAllCategories();
+      const { challengeType } = req.query;
+      const categories = await storage.getAllCategories(challengeType as string);
       res.json(categories);
     } catch (error) {
       console.error("Error getting categories:", error);
@@ -107,7 +108,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get questions count by category
   app.get("/api/questions/count-by-category", async (req, res) => {
     try {
-      const categoryCounts = await storage.getQuestionCountByCategory();
+      const { challengeType } = req.query;
+      const categoryCounts = await storage.getQuestionCountByCategory(challengeType as string);
       res.json(categoryCounts);
     } catch (error) {
       console.error("Error getting category counts:", error);

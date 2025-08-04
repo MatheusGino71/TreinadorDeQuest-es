@@ -26,6 +26,8 @@ export interface IStorage {
   getQuestions(challengeType?: string): Promise<Question[]>;
   getRandomQuestions(count: number, challengeType?: string): Promise<Question[]>;
   getQuestionById(id: string): Promise<Question | undefined>;
+  getAllCategories(challengeType?: string): Promise<string[]>;
+  getQuestionCountByCategory(challengeType?: string): Promise<Record<string, number>>;
 
   // Game session operations
   createGameSession(insertGameSession: InsertGameSession): Promise<GameSession>;
@@ -183,6 +185,30 @@ export class MemStorage implements IStorage {
 
   async getQuestionById(id: string): Promise<Question | undefined> {
     return this.questions.get(id);
+  }
+
+  async getAllCategories(challengeType?: string): Promise<string[]> {
+    const allQuestions = Array.from(this.questions.values());
+    const filteredQuestions = challengeType 
+      ? allQuestions.filter(q => q.challengeType === challengeType)
+      : allQuestions;
+    
+    const categories = [...new Set(filteredQuestions.map(q => q.category))];
+    return categories.sort();
+  }
+
+  async getQuestionCountByCategory(challengeType?: string): Promise<Record<string, number>> {
+    const allQuestions = Array.from(this.questions.values());
+    const filteredQuestions = challengeType 
+      ? allQuestions.filter(q => q.challengeType === challengeType)
+      : allQuestions;
+    
+    const result: Record<string, number> = {};
+    filteredQuestions.forEach(q => {
+      result[q.category] = (result[q.category] || 0) + 1;
+    });
+    
+    return result;
   }
 
   // Game session operations
@@ -462,6 +488,40 @@ export class DatabaseStorage implements IStorage {
     mapped.correctAnswerIndex = mapped.correct_answer_index;
     delete mapped.correct_answer_index;
     return mapped;
+  }
+
+  async getAllCategories(challengeType?: string): Promise<string[]> {
+    let query = db.selectDistinct({ category: questions.category }).from(questions);
+    
+    if (challengeType) {
+      query = query.where(eq(questions.challengeType, challengeType)) as any;
+    }
+    
+    const result = await query;
+    return result.map(r => r.category).sort();
+  }
+
+  async getQuestionCountByCategory(challengeType?: string): Promise<Record<string, number>> {
+    let query = db
+      .select({
+        category: questions.category,
+        count: sql`count(*)`
+      })
+      .from(questions)
+      .groupBy(questions.category);
+    
+    if (challengeType) {
+      query = query.where(eq(questions.challengeType, challengeType)) as any;
+    }
+    
+    const result = await query;
+    const counts: Record<string, number> = {};
+    
+    result.forEach(r => {
+      counts[r.category] = Number(r.count);
+    });
+    
+    return counts;
   }
 
   // Game session operations
