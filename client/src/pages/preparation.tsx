@@ -15,7 +15,8 @@ import {
   Play,
   BookOpen,
   Timer,
-  Award
+  Award,
+  Settings
 } from "lucide-react";
 
 interface PreparationProps {
