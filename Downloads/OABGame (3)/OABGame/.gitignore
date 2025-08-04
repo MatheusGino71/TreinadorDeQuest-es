@@ -57,6 +57,9 @@ replit.nix
 *.db
 *.sqlite
 
+# Large data files (>100MB)
+extracted_questions.ts
+
 # Temporary files
 *.tmp
 *.temp
