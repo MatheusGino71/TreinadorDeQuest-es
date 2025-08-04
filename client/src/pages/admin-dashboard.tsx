@@ -70,6 +70,51 @@ export default function AdminDashboard() {
     retry: false,
   });
 
+  // Mutation para exportar questões
+  const exportQuestionsMutation = useMutation({
+    mutationFn: async ({ category, challengeType, format }: { category?: string; challengeType?: string; format: string }) => {
+      const params = new URLSearchParams();
+      if (category) params.append('category', category);
+      if (challengeType) params.append('challengeType', challengeType);
+      params.append('format', format);
+      
+      const response = await fetch(`/api/admin/export/questions?${params}`, {
+        headers: {
+          'Authorization': `Bearer admin@sistema.com`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao exportar questões');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `questoes_${category || challengeType || 'todas'}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso",
+        description: "Questões exportadas com sucesso!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao exportar questões",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Mutation para atualizar usuário
   const updateUserMutation = useMutation({
     mutationFn: async (userData: { id: string; role?: string; isActive?: boolean }) => {
@@ -443,6 +488,43 @@ export default function AdminDashboard() {
                       <Button className="mt-4 w-full" variant="outline">
                         Gerenciar Concursos
                       </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Exportar Questões</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <Button 
+                          className="w-full" 
+                          variant="outline"
+                          onClick={() => exportQuestionsMutation.mutate({ format: 'json' })}
+                          disabled={exportQuestionsMutation.isPending}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Todas as Questões (JSON)
+                        </Button>
+                        <Button 
+                          className="w-full" 
+                          variant="outline"
+                          onClick={() => exportQuestionsMutation.mutate({ challengeType: 'OAB_1_FASE', format: 'json' })}
+                          disabled={exportQuestionsMutation.isPending}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Somente OAB (JSON)
+                        </Button>
+                        <Button 
+                          className="w-full" 
+                          variant="outline"
+                          onClick={() => exportQuestionsMutation.mutate({ challengeType: 'CONCURSOS_MPSP', format: 'json' })}
+                          disabled={exportQuestionsMutation.isPending}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Somente Concursos (JSON)
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
 

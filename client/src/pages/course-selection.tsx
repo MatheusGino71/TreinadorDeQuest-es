@@ -104,29 +104,29 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Header */}
-      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+      <header className="bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="bg-gray-700 p-2 rounded-lg">
                 <BookOpen className="w-6 h-6 text-white" />
               </div>
               <div>
                 <div className="flex flex-col">
                   <h1 className="text-2xl font-bold text-white">Seleção de Curso</h1>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-blue-200">Escolha sua área de estudo</p>
-                    <span className="text-xs text-blue-300">Powered by BIPETech</span>
+                    <p className="text-sm text-gray-300">Escolha sua área de estudo</p>
+                    <span className="text-xs text-gray-400">Powered by BIPETech</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-white/10 px-3 py-2 rounded-lg">
-                <User className="w-4 h-4 text-blue-200" />
+              <div className="flex items-center space-x-2 bg-gray-700/60 px-3 py-2 rounded-lg">
+                <User className="w-4 h-4 text-gray-300" />
                 <span className="text-white font-medium">{user?.name}</span>
               </div>
               
@@ -136,7 +136,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
                     variant="outline"
                     size="sm"
                     onClick={() => window.location.href = '/admin'}
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    className="bg-gray-700/60 border-gray-600 text-white hover:bg-gray-600"
                   >
                     <User className="w-4 h-4 mr-1" />
                     Admin
@@ -146,7 +146,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
                   variant="outline"
                   size="sm"
                   onClick={onLogout}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  className="bg-gray-700/60 border-gray-600 text-white hover:bg-gray-600"
                 >
                   <LogOut className="w-4 h-4 mr-1" />
                   Sair
@@ -166,7 +166,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
             <Button
               variant="outline"
               onClick={onBack}
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-gray-700/60 border-gray-600 text-white hover:bg-gray-600"
             >
               ← Voltar para Preparação
             </Button>
@@ -249,7 +249,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
           {/* Seleção de Categoria */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-4">2. Escolha a Disciplina (Opcional)</h2>
-            <p className="text-blue-200 mb-4">
+            <p className="text-gray-300 mb-4">
               Selecione uma disciplina específica ou deixe em branco para questões mistas
             </p>
 
@@ -258,26 +258,26 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
               <Card 
                 className={`cursor-pointer transition-all duration-200 ${
                   selectedCategory === null
-                    ? "ring-2 ring-purple-500 bg-purple-50/10" 
-                    : "hover:bg-white/5"
+                    ? "ring-2 ring-blue-500 bg-gray-700/30" 
+                    : "hover:bg-gray-700/20"
                 }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-purple-600 p-2 rounded-lg">
+                      <div className="bg-gray-600 p-2 rounded-lg">
                         <Target className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <CardTitle className="text-white">Todas as Disciplinas</CardTitle>
-                        <CardDescription className="text-blue-200">
+                        <CardDescription className="text-gray-300">
                           Questões mistas de todas as áreas
                         </CardDescription>
                       </div>
                     </div>
                     {selectedCategory === null && (
-                      <Badge className="bg-purple-600">Selecionado</Badge>
+                      <Badge className="bg-blue-600">Selecionado</Badge>
                     )}
                   </div>
                 </CardHeader>
@@ -294,21 +294,21 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
                     key={category}
                     className={`cursor-pointer transition-all duration-200 ${
                       selectedCategory === category 
-                        ? "ring-2 ring-blue-500 bg-blue-50/10" 
-                        : "hover:bg-white/5"
+                        ? "ring-2 ring-blue-500 bg-gray-700/30" 
+                        : "hover:bg-gray-700/20"
                     }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className="bg-blue-600 p-2 rounded-lg text-white">
+                        <div className="bg-gray-600 p-2 rounded-lg text-white">
                           {getCategoryIcon(category)}
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-white text-sm">
                             {category}
                           </CardTitle>
-                          <CardDescription className="text-blue-200 text-xs">
+                          <CardDescription className="text-gray-300 text-xs">
                             {questionCount} questões
                           </CardDescription>
                         </div>
@@ -316,7 +316,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
-                        <div className="text-xs text-blue-300">
+                        <div className="text-xs text-gray-400">
                           {selectedChallengeType === "OAB_1_FASE" ? "OAB" : "Concursos"}
                         </div>
                         {selectedCategory === category && (
@@ -332,7 +332,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
 
           {/* Resumo da Seleção */}
           <div className="mb-8">
-            <Card className="bg-white/5 border-white/20">
+            <Card className="bg-gray-800/60 border-gray-600">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Trophy className="w-5 h-5" />
@@ -341,32 +341,32 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                  <div className="bg-white/5 p-4 rounded-lg">
+                  <div className="bg-gray-700/40 p-4 rounded-lg">
                     <Target className="w-6 h-6 text-blue-400 mx-auto mb-2" />
                     <div className="text-white font-medium text-sm">Tipo de Prova</div>
-                    <div className="text-blue-200 text-xs">
+                    <div className="text-gray-300 text-xs">
                       {selectedChallengeType === "OAB_1_FASE" ? "OAB 1ª Fase" : "Concursos MPSP"}
                     </div>
                   </div>
                   
-                  <div className="bg-white/5 p-4 rounded-lg">
+                  <div className="bg-gray-700/40 p-4 rounded-lg">
                     <BookOpen className="w-6 h-6 text-green-400 mx-auto mb-2" />
                     <div className="text-white font-medium text-sm">Disciplina</div>
-                    <div className="text-blue-200 text-xs">
+                    <div className="text-gray-300 text-xs">
                       {selectedCategory || "Todas as disciplinas"}
                     </div>
                   </div>
                   
-                  <div className="bg-white/5 p-4 rounded-lg">
+                  <div className="bg-gray-700/40 p-4 rounded-lg">
                     <Heart className="w-6 h-6 text-red-400 mx-auto mb-2" />
                     <div className="text-white font-medium text-sm">Vidas</div>
-                    <div className="text-blue-200 text-xs">3 vidas</div>
+                    <div className="text-gray-300 text-xs">3 vidas</div>
                   </div>
                   
-                  <div className="bg-white/5 p-4 rounded-lg">
+                  <div className="bg-gray-700/40 p-4 rounded-lg">
                     <Timer className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
                     <div className="text-white font-medium text-sm">Tempo</div>
-                    <div className="text-blue-200 text-xs">60 segundos/questão</div>
+                    <div className="text-gray-300 text-xs">60 segundos/questão</div>
                   </div>
                 </div>
               </CardContent>
@@ -378,7 +378,7 @@ export default function CourseSelection({ user, onStartGame, onLogout, onBack }:
             <Button
               onClick={handleStartGame}
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg"
+              className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-6 text-lg border border-gray-600"
             >
               <ArrowRight className="w-5 h-5 mr-2" />
               Iniciar Jogo

@@ -383,6 +383,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ADMIN ROUTES
   
   // Estatísticas administrativas
+  // Admin export questions route
+  app.get("/api/admin/export/questions", isAdmin, async (req, res) => {
+    try {
+      const { category, challengeType, format = 'json' } = req.query;
+      
+      let questions;
+      if (category && challengeType) {
+        questions = await storage.getRandomQuestions(1000, challengeType as string, category as string);
+      } else if (challengeType) {
+        questions = await storage.getRandomQuestions(1000, challengeType as string);
+      } else {
+        questions = await storage.getRandomQuestions(1000);
+      }
+
+      if (format === 'xlsx') {
+        // Return Excel-formatted data
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="questoes_${category || challengeType || 'todas'}.json"`);
+        
+        const excelData = questions.map(q => ({
+          ID: q.id,
+          Categoria: q.category,
+          Tipo: q.challengeType,
+          Questao: q.questionText,
+          AlternativaA: q.options[0],
+          AlternativaB: q.options[1],
+          AlternativaC: q.options[2],
+          AlternativaD: q.options[3],
+          RespostaCorreta: q.correctAnswer,
+          Explicacao: q.explanation,
+          Dificuldade: q.difficulty
+        }));
+        
+        res.json(excelData);
+      } else {
+        // Return JSON
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="questoes_${category || challengeType || 'todas'}.json"`);
+        res.json(questions);
+      }
+    } catch (error) {
+      console.error("Error exporting questions:", error);
+      res.status(500).json({ message: "Erro ao exportar questões" });
+    }
+  });
+
   app.get("/api/admin/stats", isAdmin, async (req, res) => {
     try {
       const stats = await storage.getAdminStats();
