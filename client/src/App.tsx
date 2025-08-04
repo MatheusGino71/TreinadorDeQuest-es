@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Game from "@/pages/game";
 import LoginSimple from "@/pages/login-simple";
 import Preparation from "@/pages/preparation";
+import CourseSelection from "@/pages/course-selection";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 import { type User } from "@shared/schema";
@@ -14,7 +15,7 @@ import { type User } from "@shared/schema";
 function Router() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [gameState, setGameState] = useState<'preparation' | 'playing'>('preparation');
+  const [gameState, setGameState] = useState<'preparation' | 'course-selection' | 'playing'>('preparation');
 
   useEffect(() => {
     // Check for stored user session
@@ -42,9 +43,18 @@ function Router() {
     setGameState('preparation'); // Reset game state
   };
 
-  const handleStartGame = (challengeType: string) => {
-    // Store challenge type for the game session
+  const handleShowCourseSelection = () => {
+    setGameState('course-selection');
+  };
+
+  const handleStartGame = (challengeType: string, category?: string) => {
+    // Store challenge type and category for the game session
     localStorage.setItem('game-challenge-type', challengeType);
+    if (category) {
+      localStorage.setItem('game-category', category);
+    } else {
+      localStorage.removeItem('game-category');
+    }
     setGameState('playing');
   };
 
@@ -74,8 +84,19 @@ function Router() {
     return (
       <Preparation 
         user={user} 
-        onStartGame={handleStartGame} 
+        onShowCourseSelection={handleShowCourseSelection}
         onLogout={handleLogout} 
+      />
+    );
+  }
+
+  if (gameState === 'course-selection') {
+    return (
+      <CourseSelection
+        user={user}
+        onStartGame={handleStartGame}
+        onLogout={handleLogout}
+        onBack={() => setGameState('preparation')}
       />
     );
   }

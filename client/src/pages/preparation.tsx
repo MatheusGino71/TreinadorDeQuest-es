@@ -21,11 +21,11 @@ import {
 
 interface PreparationProps {
   user: any;
-  onStartGame: (challengeType: string) => void;
+  onShowCourseSelection: () => void;
   onLogout: () => void;
 }
 
-export default function Preparation({ user, onStartGame, onLogout }: PreparationProps) {
+export default function Preparation({ user, onShowCourseSelection, onLogout }: PreparationProps) {
   const [showInstructions, setShowInstructions] = useState(false);
   const [selectedChallengeType, setSelectedChallengeType] = useState<"OAB_1_FASE" | "CONCURSOS_MPSP">("OAB_1_FASE");
 
@@ -207,12 +207,12 @@ export default function Preparation({ user, onStartGame, onLogout }: Preparation
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button
-              onClick={() => onStartGame(selectedChallengeType)}
+              onClick={onShowCourseSelection}
               size="lg"
               className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-4 px-8 text-lg min-w-[200px]"
             >
               <Play className="w-6 h-6 mr-2" />
-              Iniciar {selectedChallengeType === "OAB_1_FASE" ? "OAB 1ª Fase" : "Concursos"}
+              Selecionar Curso
             </Button>
             
             <Button

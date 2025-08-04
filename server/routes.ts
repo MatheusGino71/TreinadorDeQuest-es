@@ -93,10 +93,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all categories available
+  app.get("/api/questions/categories", async (req, res) => {
+    try {
+      const categories = await storage.getAllCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error getting categories:", error);
+      res.status(500).json({ message: "Failed to get categories" });
+    }
+  });
+
+  // Get questions count by category
+  app.get("/api/questions/count-by-category", async (req, res) => {
+    try {
+      const categoryCounts = await storage.getQuestionCountByCategory();
+      res.json(categoryCounts);
+    } catch (error) {
+      console.error("Error getting category counts:", error);
+      res.status(500).json({ message: "Failed to get category counts" });
+    }
+  });
+
   // Start new game session
   app.post("/api/game/start", async (req, res) => {
     try {
-      const { userId, challengeType = "OAB_1_FASE" } = req.body;
+      const { userId, challengeType = "OAB_1_FASE", category } = req.body;
       
       // Limitando a 20 questões por sessão conforme solicitado
       const sessionQuestionLimit = 20;
@@ -117,8 +139,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const session = await storage.createGameSession(sessionData);
-      // Retornar apenas 20 questões aleatórias por sessão
-      const questions = await storage.getRandomQuestions(20, challengeType);
+      // Retornar apenas 20 questões aleatórias por sessão (filtradas por categoria se especificada)
+      const questions = await storage.getRandomQuestions(20, challengeType, category);
       
       res.json({
         session,

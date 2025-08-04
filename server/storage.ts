@@ -93,10 +93,88 @@ export class MemStorage implements IStorage {
     return allQuestions.filter(q => q.challengeType === challengeType);
   }
 
-  async getRandomQuestions(count: number, challengeType?: string): Promise<Question[]> {
-    const questions = await this.getQuestions(challengeType);
-    const shuffled = questions.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(count, questions.length));
+  async getRandomQuestions(count: number, challengeType?: string, category?: string): Promise<Question[]> {
+    let query = db.select().from(questions);
+    
+    if (challengeType && category) {
+      query = query.where(
+        sql`${questions.challengeType} = ${challengeType} AND ${questions.category} = ${category}`
+      ) as any;
+    } else if (challengeType) {
+      query = query.where(eq(questions.challengeType, challengeType)) as any;
+    } else if (category) {
+      query = query.where(eq(questions.category, category)) as any;
+    }
+    
+    const results = await query;
+    
+    // Mapear snake_case do DB para camelCase esperado pelo frontend
+    const mappedQuestions = results.map(q => {
+      const mapped = { ...q } as any;
+      if (mapped.correct_answer_index !== undefined) {
+        mapped.correctAnswerIndex = mapped.correct_answer_index;
+        delete mapped.correct_answer_index;
+      }
+      if (mapped.challenge_type !== undefined) {
+        mapped.challengeType = mapped.challenge_type;
+        delete mapped.challenge_type;
+      }
+      return mapped as Question;
+    });
+    
+    // Shuffle and return requested count
+    const shuffled = mappedQuestions.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, mappedQuestions.length));
+  }
+
+  async getAllCategories(): Promise<string[]> {
+    try {
+      const results = await db
+        .selectDistinct({ category: questions.category })
+        .from(questions)
+        .orderBy(questions.category);
+      
+      return results.map(r => r.category);
+    } catch (error) {
+      console.error('Error getting categories:', error);
+      return [];
+    }
+  }
+
+  async getQuestionCountByCategory(): Promise<Record<string, { total: number; oab: number; concursos: number }>> {
+    try {
+      const categoryCounts = await db
+        .select({
+          category: questions.category,
+          challengeType: questions.challengeType,
+          count: sql`count(*)`
+        })
+        .from(questions)
+        .groupBy(questions.category, questions.challengeType)
+        .orderBy(questions.category);
+
+      const result: Record<string, { total: number; oab: number; concursos: number }> = {};
+
+      categoryCounts.forEach(item => {
+        if (!result[item.category]) {
+          result[item.category] = { total: 0, oab: 0, concursos: 0 };
+        }
+        
+        const count = Number(item.count);
+        result[item.category].total += count;
+        
+        if (item.challengeType === 'OAB_1_FASE') {
+          result[item.category].oab = count;
+        } else if (item.challengeType === 'CONCURSOS_MPSP') {
+          result[item.category].concursos = count;
+        }
+      });
+
+      return result;
+    } catch (error) {
+      console.error('Error getting category counts:', error);
+      return {};
+    }
   }
 
   async getQuestionById(id: string): Promise<Question | undefined> {
