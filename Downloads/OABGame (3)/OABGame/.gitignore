@@ -1,0 +1,113 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production builds
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Runtime files
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Replit specific
+.replit
+replit.nix
+
+# Database files
+*.db
+*.sqlite
+
+# Large data files (>100MB)
+extracted_questions.ts
+
+# Temporary files
+*.tmp
+*.temp
+
+# Compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Lock files (keep package-lock.json for consistency)
+# yarn.lock
+
+# Hot reload
+.vite/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Test files
+test-results/
+playwright-report/
+
+# System user files and directories
+../../../*
+../../*
+/Users/
+/home/
+C:/Users/
+AppData/
+Documents/
+Desktop/
+Downloads/
+Pictures/
+Videos/
+Music/
+OneDrive/
+NTUSER.DAT*
+ntuser.dat*
+.bash_history
+.ssh/
+.vscode/
+.bun/
+.rest-client/
+.node_repl_history
+*.regtrans-ms
+*.blf
+TMContainer*

@@ -1,0 +1,430 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAME OAB - Processo Civil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'game-bg': '#0F172A',
+                        'game-surface': '#1E293B',
+                        'game-blue': '#2563EB',
+                        'game-green': '#10B981',
+                        'game-red': '#EF4444',
+                        'game-yellow': '#F59E0B',
+                        'game-text': '#F8FAFC',
+                        'game-text-secondary': '#CBD5E1',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-subtle': 'bounce 1s ease-in-out 2',
+                        'shake': 'shake 0.5s ease-in-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-2px)' },
+                            '20%, 40%, 60%, 80%': { transform: 'translateX(2px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(37, 99, 235, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(37, 99, 235, 0.8)' },
+                        },
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-game-bg min-h-screen font-inter text-game-text">
+    <!-- @COMPONENT: GameContainer -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <!-- @COMPONENT: GameHeader -->
+        <header class="bg-game-surface shadow-lg border-b-2 border-game-blue">
+            <div class="max-w-6xl mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-game-blue p-2 rounded-lg">
+                            <i class="fas fa-gamepad text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-game-text">GAME OAB</h1>
+                            <p class="text-sm text-game-text-secondary">Processo Civil</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Score and Level Display -->
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <div class="text-sm text-game-text-secondary">Pontuação</div>
+                            <div class="text-xl font-bold text-game-yellow" data-bind="gameState.score">1,250</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-game-text-secondary">Nível</div>
+                            <div class="text-xl font-bold text-game-blue" data-bind="gameState.level">5</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-game-text-secondary">Vidas</div>
+                            <div class="flex space-x-1">
+                                <!-- @MAP: Array(gameState.lives).fill().map((_, i) => ( -->
+                                <i class="fas fa-heart text-game-red"></i>
+                                <i class="fas fa-heart text-game-red"></i>
+                                <i class="fas fa-heart text-game-red"></i>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: GameHeader -->
+
+        <!-- Main Game Area -->
+        <main class="flex-1 flex items-center justify-center p-4">
+            <div class="max-w-4xl w-full">
+                
+                <!-- Progress Bar -->
+                <!-- @COMPONENT: ProgressBar -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-game-text-secondary">Progresso da Sessão</span>
+                        <span class="text-sm text-game-text-secondary" data-bind="gameState.questionNumber">Questão 7 de 20</span>
+                    </div>
+                    <div class="w-full bg-game-surface rounded-full h-3 shadow-inner">
+                        <div class="bg-gradient-to-r from-game-blue to-game-green h-3 rounded-full transition-all duration-500 ease-out" 
+                             style="width: 35%" data-bind="gameState.progress"></div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: ProgressBar -->
+
+                <!-- Timer -->
+                <!-- @COMPONENT: Timer -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-game-surface rounded-full p-4 shadow-lg animate-glow">
+                        <div class="relative w-16 h-16">
+                            <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" stroke="#334155" stroke-width="8" fill="none"/>
+                                <circle cx="50" cy="50" r="45" stroke="#F59E0B" stroke-width="8" fill="none"
+                                        stroke-dasharray="283" stroke-dashoffset="113" 
+                                        class="transition-all duration-1000 ease-linear" data-bind="timer.strokeDashoffset"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-xl font-bold text-game-yellow" data-bind="timer.seconds">12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Timer -->
+
+                <!-- Question Card -->
+                <!-- @COMPONENT: QuestionCard -->
+                <div class="bg-game-surface rounded-2xl shadow-2xl p-8 mb-8 border border-gray-600">
+                    <div class="text-center">
+                        <div class="mb-4">
+                            <span class="bg-game-blue text-white px-3 py-1 rounded-full text-sm font-medium">
+                                Processo Civil
+                            </span>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h2 class="text-2xl md:text-3xl font-semibold leading-relaxed text-game-text mb-4" data-bind="currentQuestion.text">
+                                "O prazo para apresentação de contestação em processo de conhecimento é de 15 dias, contados da citação válida."
+                            </h2>
+                            
+                            <div class="flex items-center justify-center space-x-2 text-game-text-secondary">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="text-sm">Esta afirmação é verdadeira ou falsa?</span>
+                            </div>
+                        </div>
+
+                        <!-- Difficulty Indicator -->
+                        <div class="flex justify-center mb-6">
+                            <div class="flex items-center space-x-1">
+                                <span class="text-xs text-game-text-secondary mr-2">Dificuldade:</span>
+                                <!-- @MAP: Array(question.difficulty).fill().map((_, i) => ( -->
+                                <i class="fas fa-star text-game-yellow text-sm"></i>
+                                <i class="fas fa-star text-game-yellow text-sm"></i>
+                                <i class="fas fa-star text-game-yellow text-sm"></i>
+                                <i class="fas fa-star text-gray-600 text-sm"></i>
+                                <i class="fas fa-star text-gray-600 text-sm"></i>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: QuestionCard -->
+
+                <!-- Answer Buttons -->
+                <!-- @COMPONENT: AnswerButtons -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <button class="answer-btn group bg-game-green hover:bg-green-600 text-white rounded-2xl p-8 text-xl font-bold shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-2xl active:scale-95"
+                            data-event="click:handleAnswer" data-implementation="Should handle true answer selection">
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 group-hover:bg-opacity-30 transition-all">
+                                <i class="fas fa-check text-2xl"></i>
+                            </div>
+                            <span class="text-2xl">VERDADEIRO</span>
+                        </div>
+                        <div class="mt-2 text-sm opacity-75">Pressione V ou clique aqui</div>
+                    </button>
+                    
+                    <button class="answer-btn group bg-game-red hover:bg-red-600 text-white rounded-2xl p-8 text-xl font-bold shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-2xl active:scale-95"
+                            data-event="click:handleAnswer" data-implementation="Should handle false answer selection">
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 group-hover:bg-opacity-30 transition-all">
+                                <i class="fas fa-times text-2xl"></i>
+                            </div>
+                            <span class="text-2xl">FALSO</span>
+                        </div>
+                        <div class="mt-2 text-sm opacity-75">Pressione F ou clique aqui</div>
+                    </button>
+                </div>
+                <!-- @END_COMPONENT: AnswerButtons -->
+
+                <!-- Power-ups -->
+                <!-- @COMPONENT: PowerUps -->
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button class="powerup-btn bg-game-surface hover:bg-gray-600 text-game-text rounded-xl p-3 shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Eliminar 50% das respostas" data-bind="powerups.fiftyFifty.available">
+                        <i class="fas fa-cut text-lg"></i>
+                        <div class="text-xs mt-1">50/50</div>
+                    </button>
+                    
+                    <button class="powerup-btn bg-game-surface hover:bg-gray-600 text-game-text rounded-xl p-3 shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Tempo extra (+10s)" data-bind="powerups.extraTime.available">
+                        <i class="fas fa-clock text-lg"></i>
+                        <div class="text-xs mt-1">+Tempo</div>
+                    </button>
+                    
+                    <button class="powerup-btn bg-game-surface hover:bg-gray-600 text-game-text rounded-xl p-3 shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Pular questão" data-bind="powerups.skip.available">
+                        <i class="fas fa-forward text-lg"></i>
+                        <div class="text-xs mt-1">Pular</div>
+                    </button>
+                </div>
+                <!-- @END_COMPONENT: PowerUps -->
+
+                <!-- Game Stats -->
+                <!-- @COMPONENT: GameStats -->
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-game-surface rounded-xl p-4">
+                        <div class="text-2xl font-bold text-game-green" data-bind="gameState.correctAnswers">12</div>
+                        <div class="text-sm text-game-text-secondary">Acertos</div>
+                    </div>
+                    <div class="bg-game-surface rounded-xl p-4">
+                        <div class="text-2xl font-bold text-game-red" data-bind="gameState.incorrectAnswers">3</div>
+                        <div class="text-sm text-game-text-secondary">Erros</div>
+                    </div>
+                    <div class="bg-game-surface rounded-xl p-4">
+                        <div class="text-2xl font-bold text-game-yellow" data-bind="gameState.streak">5</div>
+                        <div class="text-sm text-game-text-secondary">Sequência</div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: GameStats -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <!-- @COMPONENT: GameFooter -->
+        <footer class="bg-game-surface border-t border-gray-600 p-4">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex space-x-4">
+                    <button class="text-game-text-secondary hover:text-game-text transition-colors"
+                            data-event="click:pauseGame">
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button class="text-game-text-secondary hover:text-game-text transition-colors"
+                            data-event="click:openSettings">
+                        <i class="fas fa-cog"></i> Configurações
+                    </button>
+                </div>
+                
+                <div class="text-sm text-game-text-secondary">
+                    © 2024 Game OAB - Estudos Jurídicos Gamificados
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button class="text-game-text-secondary hover:text-game-text transition-colors"
+                            data-event="click:showHelp">
+                        <i class="fas fa-question-circle"></i> Ajuda
+                    </button>
+                    <button class="text-game-text-secondary hover:text-game-text transition-colors"
+                            data-event="click:exitGame">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </footer>
+        <!-- @END_COMPONENT: GameFooter -->
+    </div>
+    <!-- @END_COMPONENT: GameContainer -->
+
+    <!-- Game Over Modal -->
+    <!-- @COMPONENT: GameOverModal -->
+    <div id="gameOverModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden" data-bind="modals.gameOver.visible">
+        <div class="bg-game-surface rounded-2xl p-8 max-w-md w-full mx-4 text-center shadow-2xl">
+            <div class="mb-6">
+                <i class="fas fa-trophy text-6xl text-game-yellow mb-4"></i>
+                <h2 class="text-3xl font-bold text-game-text mb-2">Parabéns!</h2>
+                <p class="text-game-text-secondary">Você completou esta sessão de estudos</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-game-bg rounded-xl p-4">
+                    <div class="text-2xl font-bold text-game-yellow" data-bind="finalScore">1,250</div>
+                    <div class="text-sm text-game-text-secondary">Pontuação Final</div>
+                </div>
+                <div class="bg-game-bg rounded-xl p-4">
+                    <div class="text-2xl font-bold text-game-green" data-bind="accuracy">85%</div>
+                    <div class="text-sm text-game-text-secondary">Precisão</div>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <button class="w-full bg-game-blue hover:bg-blue-600 text-white rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:playAgain">
+                    <i class="fas fa-redo mr-2"></i> Jogar Novamente
+                </button>
+                <button class="w-full bg-game-surface hover:bg-gray-600 text-game-text rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:viewStats">
+                    <i class="fas fa-chart-bar mr-2"></i> Ver Estatísticas
+                </button>
+                <button class="w-full bg-game-green hover:bg-green-600 text-white rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:nextLevel">
+                    <i class="fas fa-arrow-right mr-2"></i> Próximo Nível
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: GameOverModal -->
+
+    <!-- Pause Modal -->
+    <!-- @COMPONENT: PauseModal -->
+    <div id="pauseModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden" data-bind="modals.pause.visible">
+        <div class="bg-game-surface rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div class="mb-6">
+                <i class="fas fa-pause text-4xl text-game-blue mb-4"></i>
+                <h2 class="text-2xl font-bold text-game-text mb-2">Jogo Pausado</h2>
+                <p class="text-game-text-secondary">Que tal uma pausa para revisar?</p>
+            </div>
+            
+            <div class="space-y-3">
+                <button class="w-full bg-game-blue hover:bg-blue-600 text-white rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:resumeGame">
+                    <i class="fas fa-play mr-2"></i> Continuar
+                </button>
+                <button class="w-full bg-game-surface hover:bg-gray-600 text-game-text rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:restartGame">
+                    <i class="fas fa-refresh mr-2"></i> Reiniciar
+                </button>
+                <button class="w-full bg-game-red hover:bg-red-600 text-white rounded-xl py-3 font-semibold transition-colors"
+                        data-event="click:quitGame">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Sair do Jogo
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: PauseModal -->
+
+    <script>
+        // TODO: Implement game logic, state management, and API integration
+        
+        (function() {
+            // @STATE: gameState object containing score, level, lives, etc.
+            // @STATE: currentQuestion object with question data
+            // @STATE: timer object for countdown functionality
+            // @STATE: modals object for modal visibility states
+            
+            // Game initialization
+            function initGame() {
+                // TODO: Initialize game state
+                // TODO: Load first question
+                // TODO: Start timer
+                console.log('Game initialized');
+            }
+
+            // Answer handling
+            function handleAnswer(isTrue) {
+                // TODO: Check if answer is correct
+                // TODO: Update score and statistics
+                // TODO: Provide visual feedback
+                // TODO: Load next question or end game
+                console.log('Answer selected:', isTrue);
+            }
+
+            // Timer functionality
+            function startTimer() {
+                // TODO: Implement countdown timer
+                // TODO: Auto-submit when time runs out
+                // TODO: Update circular progress indicator
+            }
+
+            // Power-up functions
+            function usePowerUp(type) {
+                // TODO: Implement power-up logic
+                // TODO: Update available power-ups
+                console.log('Power-up used:', type);
+            }
+
+            // Modal controls
+            function showModal(modalId) {
+                // TODO: Show specific modal
+                document.getElementById(modalId).classList.remove('hidden');
+            }
+
+            function hideModal(modalId) {
+                // TODO: Hide specific modal
+                document.getElementById(modalId).classList.add('hidden');
+            }
+
+            // Keyboard controls
+            document.addEventListener('keydown', function(event) {
+                switch(event.key.toLowerCase()) {
+                    case 'v':
+                        // TODO: Select true answer
+                        break;
+                    case 'f':
+                        // TODO: Select false answer
+                        break;
+                    case 'escape':
+                        // TODO: Pause game
+                        break;
+                }
+            });
+
+            // Button event listeners
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // TODO: Handle answer selection with visual feedback
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            document.querySelectorAll('.powerup-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // TODO: Handle power-up activation
+                    if (!this.disabled) {
+                        this.classList.add('animate-bounce-subtle');
+                    }
+                });
+            });
+
+            // Initialize the game when page loads
+            document.addEventListener('DOMContentLoaded', initGame);
+        })();
+    </script>
+</body>
+</html>
