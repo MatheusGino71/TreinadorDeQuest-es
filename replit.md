@@ -32,10 +32,12 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
-- **User Registration**: Complete signup with name, email, password, and phone
-- **Login System**: Secure authentication with password hashing using bcrypt
-- **Session Management**: localStorage-based session persistence
+- **Dual Authentication**: Supports both traditional login and Firebase Authentication
+- **Traditional System**: Complete signup with name, email, password, and phone using bcrypt
+- **Firebase Integration**: Full Firebase Auth with Google Analytics and Firestore
+- **Session Management**: localStorage for traditional, Firebase Auth state for Firebase users
 - **Form Validation**: Real-time validation with Portuguese error messages
+- **Flexible Navigation**: Users can switch between authentication methods
 
 ### Preparation Screen
 - **Game Instructions**: Interactive tutorial with rules and controls
@@ -78,6 +80,7 @@ Preferred communication style: Simple, everyday language.
 - **Data Fetching**: TanStack Query for caching and synchronization
 - **Form Handling**: React Hook Form with Zod validation
 - **Date Utilities**: date-fns for time formatting
+- **Firebase**: Complete Firebase SDK with Auth, Firestore, Analytics, and Storage
 
 ### Backend Dependencies
 - **Database**: Neon Database with Drizzle ORM
@@ -107,9 +110,21 @@ Preferred communication style: Simple, everyday language.
 5. **State Management**: Server state via TanStack Query, local state via React hooks
 6. **Gaming Elements**: Lives system, power-ups, and progressive difficulty for engagement
 
-## Recent Updates (January 31, 2025)
+## Recent Updates (February 5, 2025)
 
-### Deploy e Documentação Externa
+### Firebase Integration 
+- **Firebase Authentication**: Integração completa com Firebase Auth para login/registro
+- **Firebase Firestore**: Configuração para armazenamento de perfis de usuário
+- **Firebase Analytics**: Sistema de analytics configurado
+- **Autenticação Dual**: Sistema suporta tanto login tradicional quanto Firebase
+- **Navegação Flexível**: Usuários podem alternar entre sistemas de autenticação
+- **Firebase Game Integration**: Componente dedicado para integrar Firebase com o jogo existente
+- **Configuração Completa**: Firebase configurado com projeto gameoab-45225
+- **Rotas Separadas**: `/firebase` para login Firebase e `/firebase-game` para jogo integrado
+
+### Previous Updates (January 31, 2025)
+
+#### Deploy e Documentação Externa
 - **Documentação Completa para GitHub**: README.md detalhado com instruções de setup
 - **SETUP_LOCAL.md**: Guia passo a passo para rodar o projeto fora do Replit
 - **.env.example**: Arquivo de exemplo para configuração local

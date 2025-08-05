@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 import { Eye, EyeOff, GamepadIcon, Scale } from "lucide-react";
 
 interface LoginProps {
@@ -302,6 +303,16 @@ export default function LoginSimple({ onLoginSuccess }: LoginProps) {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Firebase Link */}
+      <div className="text-center text-sm text-gray-500 mt-4">
+        <p>© 2025 Treinador de Questões - Todos os direitos reservados</p>
+        <div className="mt-2">
+          <Link href="/firebase" className="text-blue-400 hover:text-blue-300">
+            Usar Firebase Authentication
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

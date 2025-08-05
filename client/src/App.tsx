@@ -6,10 +6,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Game from "@/pages/game";
 import LoginSimple from "@/pages/login-simple";
+import FirebaseLogin from "@/pages/firebase-login";
 import Preparation from "@/pages/preparation";
 import CourseSelection from "@/pages/course-selection";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
+import { FirebaseAuthProvider } from "@/components/FirebaseAuthProvider";
+import { FirebaseGameIntegration } from "@/components/FirebaseGameIntegration";
 import { type User } from "@shared/schema";
 
 function Router() {
@@ -104,6 +107,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={() => <Game user={user} onLogout={handleReturnToPreparation} />} />
+      <Route path="/firebase" component={FirebaseLogin} />
+      <Route path="/firebase-game" component={FirebaseGameIntegration} />
       <Route path="/admin" component={() => user.role === 'admin' ? <AdminDashboard /> : <NotFound />} />
       <Route component={NotFound} />
     </Switch>
@@ -114,10 +119,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="game-container">
-          <Router />
-        </div>
-        <Toaster />
+        <FirebaseAuthProvider>
+          <div className="game-container">
+            <Router />
+          </div>
+          <Toaster />
+        </FirebaseAuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
