@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test - Treinador de Questões</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .loading { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Connection Test</h1>
+        <p>Este teste verificará se o Firebase está configurado corretamente.</p>
+        
+        <div id="status"></div>
+        
+        <button onclick="testFirebase()">Testar Conexão Firebase</button>
+        <button onclick="testAuth()">Testar Autenticação</button>
+        <button onclick="testFirestore()">Testar Firestore</button>
+        
+        <h2>Logs:</h2>
+        <div id="logs" style="background: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWW6bAR8aUqz4g8ECyl9v0gusyS0ys6gE",
+            authDomain: "treinador-de-questoes.firebaseapp.com",
+            projectId: "treinador-de-questoes",
+            storageBucket: "treinador-de-questoes.firebasestorage.app",
+            messagingSenderId: "750836156866",
+            appId: "1:750836156866:web:98926dbb2cc9e8c9ed6e5b",
+            measurementId: "G-B4194749ZL"
+        };
+
+        // Initialize Firebase
+        let app, auth, db;
+        let isInitialized = false;
+
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.textContent += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+            console.log(message);
+        }
+
+        function setStatus(message, type = 'loading') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        window.testFirebase = async function() {
+            try {
+                setStatus('Inicializando Firebase...', 'loading');
+                log('🔥 Iniciando teste do Firebase...');
+                
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                isInitialized = true;
+                
+                log('✅ Firebase inicializado com sucesso');
+                log(`📋 Project ID: ${app.options.projectId}`);
+                log(`🔗 Auth Domain: ${app.options.authDomain}`);
+                
+                setStatus('Firebase inicializado com sucesso!', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro ao inicializar Firebase: ${error.message}`);
+                setStatus(`Erro: ${error.message}`, 'error');
+            }
+        };
+
+        window.testAuth = async function() {
+            if (!isInitialized) {
+                setStatus('Primeiro inicialize o Firebase', 'error');
+                return;
+            }
+
+            try {
+                setStatus('Testando autenticação...', 'loading');
+                log('🔐 Testando autenticação anônima...');
+                
+                const userCredential = await signInAnonymously(auth);
+                const user = userCredential.user;
+                
+                log(`✅ Autenticação bem-sucedida`);
+                log(`👤 User ID: ${user.uid}`);
+                log(`📧 Anônimo: ${user.isAnonymous}`);
+                
+                setStatus('Autenticação funcionando!', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro na autenticação: ${error.message}`);
+                setStatus(`Erro na autenticação: ${error.message}`, 'error');
+            }
+        };
+
+        window.testFirestore = async function() {
+            if (!isInitialized) {
+                setStatus('Primeiro inicialize o Firebase', 'error');
+                return;
+            }
+
+            try {
+                setStatus('Testando Firestore...', 'loading');
+                log('📊 Testando Firestore...');
+                
+                const testData = {
+                    message: 'Teste de conexão Firebase',
+                    timestamp: new Date().toISOString(),
+                    browser: navigator.userAgent,
+                    random: Math.random()
+                };
+                
+                // Criar documento
+                const docRef = doc(db, 'test', 'connection');
+                await setDoc(docRef, testData);
+                log('✅ Documento criado com sucesso');
+                
+                // Ler documento
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    log('✅ Documento lido com sucesso');
+                    log(`📝 Mensagem: ${data.message}`);
+                    log(`⏰ Timestamp: ${data.timestamp}`);
+                    
+                    setStatus('Firestore funcionando perfeitamente!', 'success');
+                } else {
+                    throw new Error('Documento não encontrado após criação');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro no Firestore: ${error.message}`);
+                
+                if (error.code === 'permission-denied') {
+                    log('⚠️ Erro de permissão - configure as regras do Firestore');
+                    setStatus('Erro de permissão no Firestore. Configure as regras.', 'error');
+                } else {
+                    setStatus(`Erro no Firestore: ${error.message}`, 'error');
+                }
+            }
+        };
+
+        // Auto-initialize on page load
+        window.addEventListener('load', () => {
+            log('🌐 Página carregada - pronto para testar Firebase');
+            setStatus('Pronto para testar Firebase', 'loading');
+        });
+
+    </script>
+</body>
+</html>

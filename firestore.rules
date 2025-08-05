@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regras para usuários autenticados
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regras para questões - leitura para todos usuários autenticados
+    match /questions/{questionId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (resource == null || resource.data.get('createdBy', '') == request.auth.uid);
+    }
+    
+    // Regras para resultados de jogos
+    match /gameResults/{resultId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Regras para estatísticas de usuários
+    match /userStats/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regras para testes de conexão (público para teste)
+    match /test/{document} {
+      allow read, write: if true;
+    }
+    
+    // Regras para dados administrativos
+    match /admin/{document} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Regra padrão - negar acesso
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
