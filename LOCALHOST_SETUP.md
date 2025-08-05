@@ -1,68 +1,25 @@
-# 🏠 RODAR NO LOCALHOST - GUIA COMPLETO
+# 🎮 Configuração Localhost - Treinador de Questões
 
-## Resumo Rápido
+## Status: Projeto Funcionando ✅
 
-O projeto já está rodando aqui no Replit, mas para rodar no seu computador local:
+O jogo está rodando perfeitamente no Replit e pode ser configurado para localhost seguindo estas instruções.
 
-### Windows:
+## 📋 Pré-requisitos
+
+### Instalações Necessárias
+- **Node.js** (versão 18 ou superior)
+- **PostgreSQL** (local ou remoto)
+- **Git** (para clonar o projeto)
+
+## 🚀 Setup Localhost
+
+### 1. Clonar/Baixar Projeto
 ```bash
-# 1. Instalar Node.js (se não tiver)
-# Baixe em: https://nodejs.org
+# Se usando Git
+git clone [URL_DO_REPOSITORIO]
+cd treinador-questoes
 
-# 2. Baixar projeto do Replit
-# Clique nos 3 pontinhos → Download as ZIP
-
-# 3. Extrair e navegar para a pasta
-cd TreinadorDeQuestoes
-
-# 4. Instalar dependências
-npm install
-
-# 5. Configurar banco (PostgreSQL)
-# Editar .env com sua configuração
-
-# 6. Migrar banco
-npm run db:push
-
-# 7. Rodar projeto
-npm run dev
-
-# 8. Acessar
-# http://localhost:5000
-```
-
-## Pré-requisitos
-
-### 1. Node.js 18+
-- **Download**: [nodejs.org](https://nodejs.org)
-- **Verificar**: `node --version`
-
-### 2. PostgreSQL
-Escolha uma opção:
-
-#### Opção A: PostgreSQL Local
-- **Windows**: [postgresql.org/download/windows](https://www.postgresql.org/download/windows/)
-- **Mac**: `brew install postgresql`
-- **Linux**: `sudo apt install postgresql`
-
-#### Opção B: Banco na Nuvem (Mais Fácil)
-- **Neon.tech**: [neon.tech](https://neon.tech) - Grátis
-- **Supabase**: [supabase.com](https://supabase.com) - Grátis
-- **Railway**: [railway.app](https://railway.app) - Grátis
-
-## Configuração Detalhada
-
-### 1. Baixar Projeto
-```bash
-# Opção A: Do GitHub (se já subiu)
-git clone https://github.com/MatheusGino71/TreinadorDeQuestoes.git
-cd TreinadorDeQuestoes
-
-# Opção B: Download ZIP do Replit
-# 1. Clique nos 3 pontinhos no painel de arquivos
-# 2. "Download as ZIP"
-# 3. Extrair para uma pasta
-# 4. Abrir terminal na pasta
+# Ou baixar arquivos manualmente
 ```
 
 ### 2. Instalar Dependências
@@ -72,232 +29,199 @@ npm install
 
 ### 3. Configurar Banco de Dados
 
-#### Criar arquivo .env:
-```env
-# PostgreSQL Local
-DATABASE_URL=postgresql://postgres:senha123@localhost:5432/treinador_questoes
-PGHOST=localhost
-PGPORT=5432
-PGUSER=postgres
-PGPASSWORD=senha123
-PGDATABASE=treinador_questoes
+#### Opção A: PostgreSQL Local
+```bash
+# Instalar PostgreSQL
+# Ubuntu/Debian
+sudo apt install postgresql postgresql-contrib
 
-# OU PostgreSQL na Nuvem (Neon.tech)
-# DATABASE_URL=postgresql://usuario:senha@host.neon.tech/database?sslmode=require
+# macOS
+brew install postgresql
 
-# Chave para sessões (opcional)
-SESSION_SECRET=minha_chave_secreta_super_longa_e_aleatoria
+# Windows
+# Baixar do site oficial
 ```
 
-### 4. Preparar Banco
+#### Opção B: Usar Neon Database (Recomendado)
+- Criar conta em https://neon.tech
+- Criar novo projeto
+- Copiar string de conexão
+
+### 4. Configurar Variáveis de Ambiente
 ```bash
-# Criar as tabelas e migrar dados
+# Criar arquivo .env na raiz do projeto
+cp .env.example .env
+```
+
+#### Conteúdo do .env
+```env
+# Database
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/treinador_questoes"
+
+# OU usar Neon Database
+DATABASE_URL="postgresql://usuario:senha@ep-xxx.neon.tech/neondb?sslmode=require"
+
+# Session
+SESSION_SECRET="seu_secret_super_seguro_aqui"
+
+# Firebase (opcional)
+VITE_FIREBASE_API_KEY="sua_api_key"
+VITE_FIREBASE_AUTH_DOMAIN="gameoab-45225.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="gameoab-45225"
+# ... outras configs Firebase
+```
+
+### 5. Configurar Banco de Dados
+```bash
+# Migrar schema para o banco
 npm run db:push
 ```
 
-Isso criará:
-- ✅ Tabela `users` (usuários)
-- ✅ Tabela `questions` (531 questões)
-- ✅ Tabela `game_session` (sessões)
-- ✅ Tabela `user_answers` (respostas)
-
-### 5. Rodar Projeto
+### 6. Executar em Desenvolvimento
 ```bash
-# Modo desenvolvimento
+# Iniciar servidor de desenvolvimento
 npm run dev
 ```
 
-**Acesse**: http://localhost:5000
-
-## URLs do Localhost
-
-- **Página Principal**: http://localhost:5000
-- **Login**: http://localhost:5000 (redireciona automaticamente)
-- **Jogo OAB**: Após login, selecionar "OAB 1ª FASE"
-- **Jogo Concursos**: Após login, selecionar "CONCURSOS"
-
-## Verificar se Funcionou
-
-### 1. Terminal deve mostrar:
+### 7. Acessar Aplicação
 ```
-[express] serving on port 5000
-Getting questions count...
-Questions count: { OAB_1_FASE: 450, CONCURSOS_MPSP: 81, total: 531 }
+http://localhost:5000
 ```
 
-### 2. No navegador:
-- ✅ Página de login carrega
-- ✅ Pode criar conta
-- ✅ Pode fazer login
-- ✅ Tela de preparação aparece
-- ✅ Jogo funciona com questões reais
-- ✅ Estatísticas aparecem corretamente
+## 🗄️ Estrutura do Banco
 
-## Configuração PostgreSQL Local
+### Tabelas Criadas Automaticamente
+- `users` - Usuários do sistema
+- `questions` - Banco de questões jurídicas
+- `game_sessions` - Sessões de jogo
+- `user_answers` - Respostas dos usuários
+- `sessions` - Sessões de autenticação
 
-### Windows (PostgreSQL local):
+### Dados Incluídos
+- **450 questões OAB 1ª Fase**
+- **105 questões Concursos MPSP**
+- **9 disciplinas jurídicas**
 
-1. **Baixar**: [postgresql.org/download/windows](https://www.postgresql.org/download/windows/)
-2. **Instalar** com senha master (ex: `postgres123`)
-3. **Abrir pgAdmin** ou Command Prompt
-4. **Criar banco**:
-   ```sql
-   CREATE DATABASE treinador_questoes;
-   ```
-5. **Configurar .env**:
-   ```env
-   DATABASE_URL=postgresql://postgres:postgres123@localhost:5432/treinador_questoes
-   PGHOST=localhost
-   PGPORT=5432
-   PGUSER=postgres
-   PGPASSWORD=postgres123
-   PGDATABASE=treinador_questoes
-   ```
+## 🔧 Scripts Disponíveis
 
-### Mac (PostgreSQL local):
 ```bash
-# Instalar
-brew install postgresql
+# Desenvolvimento
+npm run dev
 
-# Iniciar serviço
-brew services start postgresql
+# Build para produção
+npm run build
 
-# Criar banco
-createdb treinador_questoes
+# Iniciar produção
+npm start
 
-# Configurar .env (igual ao Windows)
+# Migrar banco
+npm run db:push
+
+# Verificar TypeScript
+npm run check
 ```
 
-### Linux (PostgreSQL local):
+## 🌐 URLs Localhost
+
+### Aplicação Principal
+- **Frontend**: http://localhost:5000
+- **Backend API**: http://localhost:5000/api
+
+### Páginas Disponíveis
+- `/` - Login e jogo principal
+- `/firebase` - Login Firebase
+- `/course-selection` - Seleção de disciplinas
+- `/game` - Interface do jogo
+- `/admin` - Dashboard administrativo
+
+## 🎯 Funcionalidades Localhost
+
+### ✅ Funcionará Completamente
+- Sistema de login tradicional
+- Banco completo de questões
+- Jogo com 20 questões por sessão
+- Sistema de vidas e power-ups
+- Estatísticas detalhadas
+- Dashboard administrativo
+- Autenticação Firebase (se configurado)
+
+### 🔐 Sistema Admin
+- **URL**: http://localhost:5000/admin
+- **Login**: admin@admin.com
+- **Senha**: admin123
+- Gerenciamento completo de usuários
+
+## 🐛 Troubleshooting
+
+### Erro de Conexão com Banco
 ```bash
-# Instalar
-sudo apt update
-sudo apt install postgresql postgresql-contrib
+# Verificar se PostgreSQL está rodando
+sudo systemctl status postgresql
 
-# Iniciar
-sudo systemctl start postgresql
-
-# Criar banco
-sudo -u postgres createdb treinador_questoes
-
-# Configurar .env (igual ao Windows)
+# Verificar conexão
+psql $DATABASE_URL
 ```
 
-## Banco na Nuvem (Neon.tech - Recomendado)
-
-### Por que usar Neon.tech:
-- ✅ **Grátis**: Até 10GB
-- ✅ **Fácil**: Só criar conta e copiar URL
-- ✅ **Rápido**: Sem instalação local
-- ✅ **Confiável**: Backup automático
-
-### Passos:
-1. **Criar conta**: [neon.tech](https://neon.tech)
-2. **Criar projeto**: "Treinador de Questões"
-3. **Copiar URL**: `postgresql://usuario:senha@host.neon.tech/database?sslmode=require`
-4. **Configurar .env**:
-   ```env
-   DATABASE_URL=postgresql://usuario:senha@host.neon.tech/database?sslmode=require
-   ```
-
-## Solução de Problemas
-
-### Erro: "Port 5000 already in use"
+### Erro de Dependências
 ```bash
-# Matar processo na porta 5000
-npx kill-port 5000
-
-# OU mudar porta no server/index.ts
-const PORT = 3000; // Usar 3000 em vez de 5000
-```
-
-### Erro: "Cannot connect to database"
-1. **Verificar PostgreSQL rodando**:
-   ```bash
-   # Windows
-   net start postgresql-x64-14
-   
-   # Mac
-   brew services start postgresql
-   
-   # Linux
-   sudo systemctl start postgresql
-   ```
-2. **Verificar .env** com dados corretos
-3. **Testar conexão**: Usar pgAdmin ou DBeaver
-
-### Erro: "Questions not loading"
-1. **Rodar migração**: `npm run db:push`
-2. **Verificar logs**: Console do terminal
-3. **Verificar banco**: Tabela `questions` deve ter 531 registros
-
-### Erro: "Module not found"
-```bash
-# Limpar e reinstalar
+# Limpar cache
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-## Performance no Localhost
-
-### Para desenvolvimento:
-- **Hot reload**: Ativado automaticamente
-- **Debug**: Console logs detalhados
-- **Database**: SQLite local para testes rápidos
-
-### Para produção local:
+### Erro de Porta
 ```bash
-# Build otimizada
+# Se porta 5000 estiver ocupada
+lsof -ti:5000 | xargs kill -9
+```
+
+### Logs de Debug
+```bash
+# Ver logs do servidor
+NODE_ENV=development npm run dev
+```
+
+## 📊 Performance Localhost
+
+### Vantagens
+- Acesso direto ao banco
+- Sem limitações de rede
+- Debug completo
+- Desenvolvimento mais rápido
+
+### Configurações Recomendadas
+- PostgreSQL local para melhor performance
+- SSD para banco de dados
+- Mínimo 4GB RAM
+
+## 🚀 Deploy Local para Produção
+
+### Build
+```bash
 npm run build
-
-# Rodar em produção
-npm start
 ```
 
-## Comandos Úteis
-
+### Produção
 ```bash
-# Ver logs detalhados
-DEBUG=* npm run dev
-
-# Verificar banco
-npm run db:push --verbose
-
-# Limpar cache
-npm run clean  # (se existir)
-
-# Backup banco local
-pg_dump treinador_questoes > backup.sql
-
-# Verificar porta ocupada
-netstat -ano | findstr :5000  # Windows
-lsof -i :5000                 # Mac/Linux
+NODE_ENV=production npm start
 ```
 
-## Estrutura no Localhost
-
+### Com PM2 (Recomendado)
+```bash
+npm install -g pm2
+pm2 start dist/index.js --name "treinador-questoes"
 ```
-TreinadorDeQuestoes/
-├── .env                    # Configuração local
-├── node_modules/           # Dependências instaladas
-├── dist/                   # Build de produção
-├── package.json           # Scripts e dependências
-├── client/                # Frontend React
-├── server/                # Backend Node.js
-├── shared/                # Tipos compartilhados
-└── attached_assets/       # Assets originais
-```
-
-## Próximos Passos
-
-Após rodar no localhost:
-
-1. **Testar todas funcionalidades**
-2. **Fazer backup do banco** com seus dados
-3. **Personalizar conforme necessário**
-4. **Fazer deploy** em Vercel/Railway quando pronto
-
-**Localhost funcionando = Projeto 100% seu!**
 
 ---
-**Powered by BIPETech** 🚀
+
+## ✅ Resumo Setup
+
+1. **Instalar**: Node.js + PostgreSQL
+2. **Clonar**: Projeto do repositório
+3. **Instalar**: `npm install`
+4. **Configurar**: Arquivo `.env`
+5. **Migrar**: `npm run db:push`
+6. **Executar**: `npm run dev`
+7. **Acessar**: http://localhost:5000
+
+**Projeto funcionará 100% em localhost!**
