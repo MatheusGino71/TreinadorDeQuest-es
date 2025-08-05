@@ -116,11 +116,13 @@ Preferred communication style: Simple, everyday language.
 - **Firebase Authentication**: Integração completa com Firebase Auth para login/registro
 - **Firebase Firestore**: Configuração para armazenamento de perfis de usuário
 - **Firebase Analytics**: Sistema de analytics configurado
+- **Firebase Hosting**: Configuração completa para deploy estático
 - **Autenticação Dual**: Sistema suporta tanto login tradicional quanto Firebase
 - **Navegação Flexível**: Usuários podem alternar entre sistemas de autenticação
 - **Firebase Game Integration**: Componente dedicado para integrar Firebase com o jogo existente
 - **Configuração Completa**: Firebase configurado com projeto gameoab-45225
 - **Rotas Separadas**: `/firebase` para login Firebase e `/firebase-game` para jogo integrado
+- **Deploy Automatizado**: Scripts prontos para build e deploy no Firebase Hosting
 
 ### Previous Updates (January 31, 2025)
 
