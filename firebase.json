@@ -8,17 +8,9 @@
     ],
     "rewrites": [
       {
-        "source": "/api/**",
-        "function": "app"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
-  },
-  "functions": {
-    "source": "dist",
-    "runtime": "nodejs20"
   }
 }

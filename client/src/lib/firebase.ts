@@ -8,22 +8,48 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAVP5TvjhAXsYKaOFNYEyJ9TNcoxMT5pxE",
-  authDomain: "gameoab-45225.firebaseapp.com",
-  projectId: "gameoab-45225",
-  storageBucket: "gameoab-45225.firebasestorage.app",
-  messagingSenderId: "1034952648172",
-  appId: "1:1034952648172:web:65755af9e63aa14b484cc9",
-  measurementId: "G-ZZ08WM6728"
+  apiKey: "AIzaSyBx0S4HdJ7rwcbtVLNHEbzv3xXxbQwLugY",
+  authDomain: "gameoab-a751b.firebaseapp.com",
+  projectId: "gameoab-a751b",
+  storageBucket: "gameoab-a751b.firebasestorage.app",
+  messagingSenderId: "862369578361",
+  appId: "1:862369578361:web:bf40f0b0ea69e80e3f83a8",
+  measurementId: "G-KC9T8JSY6Z"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase services
-export const analytics = getAnalytics(app);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+let analytics: any = null;
+let auth: any = null;
+let db: any = null;
+let storage: any = null;
+
+try {
+  analytics = getAnalytics(app);
+} catch (error) {
+  console.warn('Analytics not available:', error);
+}
+
+try {
+  auth = getAuth(app);
+} catch (error) {
+  console.error('Auth initialization failed:', error);
+}
+
+try {
+  db = getFirestore(app);
+} catch (error) {
+  console.error('Firestore initialization failed:', error);
+}
+
+try {
+  storage = getStorage(app);
+} catch (error) {
+  console.error('Storage initialization failed:', error);
+}
+
+export { analytics, auth, db, storage };
 
 export default app;
